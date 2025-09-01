@@ -102,7 +102,7 @@
   </style>
 </head>
 <body>
-  <div class="product-container"id="productDetail">Memuat...</div>
+  <div class="product-container" id="productDetail">Memuat...</div>
 
   <script>
     const apiURL = "https://script.google.com/macros/s/AKfycbwL_Ru_JdH4gb4LAqYPRHgJc9gyBQTU3JSCgbEHXCQuAZWaVzMsaaywi4_uFTUWl3duoQ/exec";
@@ -114,7 +114,14 @@
         const res = await fetch(apiURL);
         const products = await res.json();
 
-        const productVariants = products.filter(p => p["id"] == productId);
+        // pastikan id ada
+        if (!productId) {
+          document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan (ID kosong).</p>";
+          return;
+        }
+
+        // ambil semua varian dengan kode produk yang sama
+        const productVariants = products.filter(p => p["id"] === productId.trim());
         if (productVariants.length === 0) {
           document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan.</p>";
           return;
@@ -152,7 +159,7 @@
 
         productVariants.forEach((variant, index) => {
           const btn = document.createElement("button");
-          btn.textContent = variant.Varian;
+          btn.textContent = variant.Varian || "Default";
           btn.addEventListener("click", () => {
             priceBox.innerHTML = `
               Rp ${Number(variant.Price).toLocaleString("id-ID")}
@@ -162,16 +169,18 @@
             btn.classList.add("active");
           });
           variantButtons.appendChild(btn);
-          if (index === 0) btn.click();
+          if (index === 0) btn.click(); // pilih varian pertama otomatis
         });
 
         // Auto slide gambar
         let current = 0;
         setInterval(() => {
           const imgs = document.querySelectorAll(".product-images img");
-          imgs[current].classList.remove("active");
-          current = (current + 1) % imgs.length;
-          imgs[current].classList.add("active");
+          if (imgs.length > 0) {
+            imgs[current].classList.remove("active");
+            current = (current + 1) % imgs.length;
+            imgs[current].classList.add("active");
+          }
         }, 3000);
 
       } catch (err) {
