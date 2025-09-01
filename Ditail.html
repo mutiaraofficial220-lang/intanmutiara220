@@ -5,73 +5,151 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detail Produk</title>
   <style>
-    body {font-family: 'Poppins', sans-serif; margin: 0; background:#f9fafb;}
-    header {background:#1e40af;color:#fff;padding:15px;text-align:center;}
-    .container {max-width:1000px;margin:auto;padding:20px;}
-    .product-detail {display:flex;flex-wrap:wrap;gap:20px;background:#fff;padding:20px;border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,0.05);}
-    .product-detail img {width:100%;max-width:400px;border-radius:12px;object-fit:cover;}
-    .product-info {flex:1;}
-    .product-title {font-size:1.5rem;font-weight:700;margin-bottom:10px;color:#1e3a8a;}
-    .product-price {font-size:1.3rem;color:#e11d48;font-weight:700;}
-    .product-discount {color:#777;text-decoration:line-through;margin-left:10px;}
-    .product-meta {margin-top:10px;color:#555;}
-    .buy-links {margin-top:20px;display:flex;gap:10px;}
-    .buy-links a {flex:1;text-align:center;padding:12px;border-radius:8px;font-weight:600;text-decoration:none;color:#fff;}
-    .shopee {background:#f97316;}
-    .tokopedia {background:#16a34a;}
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9fafb;
+    }
+    .product-detail {
+      display: flex;
+      gap: 20px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .product-detail img {
+      width: 300px;
+      border-radius: 12px;
+    }
+    .product-info {
+      flex: 1;
+    }
+    .product-title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    #productPrice {
+      font-size: 20px;
+      font-weight: bold;
+      color: #d32f2f;
+      margin-bottom: 15px;
+    }
+    .product-meta {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+    .product-variants button {
+      margin: 5px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #1e40af;
+      cursor: pointer;
+      background: #fff;
+      transition: 0.2s;
+    }
+    .product-variants button:hover {
+      background: #e0e7ff;
+    }
+    .product-variants button.active {
+      background: #1e40af;
+      color: white;
+      font-weight: bold;
+    }
+    .buy-links {
+      margin-top: 20px;
+    }
+    .buy-links a {
+      display: inline-block;
+      margin-right: 10px;
+      padding: 10px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      color: white;
+    }
+    .buy-links a.shopee { background: #ff5722; }
+    .buy-links a.tokopedia { background: #4caf50; }
   </style>
 </head>
 <body>
-<header>
-  <h1>Detail Produk</h1>
-</header>
+  <div id="productDetail">Memuat detail produk...</div>
 
-<div class="container">
-  <div id="productDetail">Memuat produk...</div>
-</div>
-
-<script>
-  const apiURL = "https://script.google.com/macros/s/AKfycbxsRpEauvSDMRRhblLk0skjRwnO6322OjcljJEIitE8AoD1kRpzuovqm5yFyY4_fNigJg/exec";
-
-  async function fetchProductDetail() {
+  <script>
+    const apiURL = "https://script.google.com/macros/s/AKfycbxsRpEauvSDMRRhblLk0skjRwnO6322OjcljJEIitE8AoD1kRpzuovqm5yFyY4_fNigJg/exec"; // Ganti dengan URL CSV/JSON kamu
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get("id");
 
-    try {
-      const res = await fetch(apiURL);
-      const products = await res.json();
-      const product = products.find(p => p.id == productId);
+    async function fetchProductDetail() {
+      try {
+        const res = await fetch(apiURL);
+        const products = await res.json();
 
-      if (!product) {
-        document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan.</p>";
-        return;
-      }
+        // Ambil semua varian berdasarkan "Kode Produk"
+        const productVariants = products.filter(p => p["Kode Produk"] == productId);
 
-      document.getElementById("productDetail").innerHTML = `
-        <div class="product-detail">
-          <img src="${product.image}" alt="${product.title}">
-          <div class="product-info">
-            <div class="product-title">${product.title}</div>
-            <div>
-              <span class="product-price">${product.price}</span>
-              ${product.discount ? `<span class="product-discount">${product.discount}</span>` : ""}
-            </div>
-            <div class="product-meta">⭐ ${product.rating || "4.8"} | Terjual ${product.sold || "100+"}</div>
-            <p style="margin-top:15px;">${product.description || "Deskripsi produk belum tersedia."}</p>
-            <div class="buy-links">
-              <a href="${product.shopee || '#'}" target="_blank" class="shopee">Beli di Shopee</a>
-              <a href="${product.tokopedia || '#'}" target="_blank" class="tokopedia">Beli di Tokopedia</a>
+        if (productVariants.length === 0) {
+          document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan.</p>";
+          return;
+        }
+
+        // Data umum dari varian pertama
+        const baseProduct = productVariants[0];
+
+        // Render tampilan awal
+        document.getElementById("productDetail").innerHTML = `
+          <div class="product-detail">
+            <img src="${baseProduct["Image 1"]}" alt="${baseProduct.Title}">
+            <div class="product-info">
+              <div class="product-title">${baseProduct.Title}</div>
+              <div id="productPrice"></div>
+              <div class="product-meta">⭐ 4.8 | Terjual 100+</div>
+              <p>${baseProduct.Diskripsi || "Deskripsi belum tersedia."}</p>
+              <h4>Pilih Varian:</h4>
+              <div id="variantButtons" class="product-variants"></div>
+              <div class="buy-links">
+                <a href="${baseProduct.Shopee || '#'}" target="_blank" class="shopee">Shopee</a>
+                <a href="${baseProduct.Tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
+              </div>
             </div>
           </div>
-        </div>
-      `;
-    } catch (err) {
-      document.getElementById("productDetail").innerHTML = "<p>Gagal memuat detail produk.</p>";
-      console.error(err);
-    }
-  }
+        `;
 
-  fetchProductDetail();
-</script>
+        const variantButtons = document.getElementById("variantButtons");
+        const priceBox = document.getElementById("productPrice");
+
+        // Tambahkan tombol varian
+        productVariants.forEach((variant, index) => {
+          const btn = document.createElement("button");
+          btn.textContent = variant.Varian;
+          btn.addEventListener("click", () => {
+            // Update harga
+            priceBox.innerHTML = `
+              <span>Rp ${Number(variant.Price).toLocaleString("id-ID")}</span>
+              ${variant.Diskon ? `<span style="margin-left:10px;color:#777;text-decoration:line-through">Rp ${Number(variant.Diskon).toLocaleString("id-ID")}</span>` : ""}
+            `;
+
+            // Highlight tombol aktif
+            document.querySelectorAll(".product-variants button").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+          });
+          variantButtons.appendChild(btn);
+
+          // Pilih varian pertama sebagai default
+          if (index === 0) {
+            btn.click();
+          }
+        });
+
+      } catch (err) {
+        document.getElementById("productDetail").innerHTML = "<p>Gagal memuat detail produk.</p>";
+        console.error(err);
+      }
+    }
+
+    fetchProductDetail();
+  </script>
 </body>
 </html>
