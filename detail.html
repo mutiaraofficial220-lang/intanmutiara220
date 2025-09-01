@@ -7,78 +7,105 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f9fafb;
+      margin: 0;
+      background: #f5f5f5;
     }
-    .product-detail {
-      display: flex;
-      gap: 20px;
+    .product-container {
       background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 15px;
     }
-    .product-detail img {
-      width: 300px;
-      border-radius: 12px;
+    /* Gambar slider */
+    .product-images {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+      overflow: hidden;
+      border-radius: 10px;
     }
-    .product-info {
-      flex: 1;
+    .product-images img {
+      width: 100%;
+      display: none;
     }
-    .product-title {
+    .product-images img.active {
+      display: block;
+    }
+    .price {
       font-size: 22px;
       font-weight: bold;
-      margin-bottom: 10px;
-    }
-    #productPrice {
-      font-size: 20px;
-      font-weight: bold;
       color: #d32f2f;
-      margin-bottom: 15px;
+      margin-top: 10px;
     }
-    .product-meta {
+    .old-price {
+      text-decoration: line-through;
+      color: #777;
+      margin-left: 10px;
+      font-size: 16px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: #ff5722;
+      color: #fff;
+      font-size: 12px;
+      border-radius: 4px;
+      margin-top: 5px;
+    }
+    .meta {
+      margin-top: 10px;
       font-size: 14px;
-      color: #666;
-      margin-bottom: 15px;
+      color: #555;
     }
-    .product-variants button {
-      margin: 5px;
-      padding: 8px 12px;
+    .variants {
+      margin: 15px 0;
+    }
+    .variants button {
+      margin: 4px;
+      padding: 6px 12px;
       border-radius: 6px;
       border: 1px solid #1e40af;
       cursor: pointer;
       background: #fff;
-      transition: 0.2s;
     }
-    .product-variants button:hover {
-      background: #e0e7ff;
-    }
-    .product-variants button.active {
+    .variants button.active {
       background: #1e40af;
-      color: white;
+      color: #fff;
       font-weight: bold;
     }
     .buy-links {
+      display: flex;
+      gap: 10px;
       margin-top: 20px;
     }
     .buy-links a {
-      display: inline-block;
-      margin-right: 10px;
-      padding: 10px 16px;
+      flex: 1;
+      text-align: center;
+      padding: 12px;
       border-radius: 6px;
       text-decoration: none;
+      color: #fff;
       font-weight: bold;
-      color: white;
     }
     .buy-links a.shopee { background: #ff5722; }
     .buy-links a.tokopedia { background: #4caf50; }
+    .description {
+      background: #fff;
+      margin-top: 10px;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .description h3 {
+      margin-top: 0;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
-  <div id="productDetail">Memuat detail produk...</div>
+  <div class="product-container"id="productDetail">Memuat...</div>
 
   <script>
-    const apiURL = "https://script.google.com/macros/s/AKfycbwL_Ru_JdH4gb4LAqYPRHgJc9gyBQTU3JSCgbEHXCQuAZWaVzMsaaywi4_uFTUWl3duoQ/exec"; // Ganti dengan URL CSV/JSON kamu
+    const apiURL = "https://script.google.com/macros/s/AKfycbwL_Ru_JdH4gb4LAqYPRHgJc9gyBQTU3JSCgbEHXCQuAZWaVzMsaaywi4_uFTUWl3duoQ/exec";
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get("id");
 
@@ -87,70 +114,72 @@
         const res = await fetch(apiURL);
         const products = await res.json();
 
-        // Ambil semua varian berdasarkan "Kode Produk"
-        const productVariants = products.filter(p => p["Kode Produk"] == productId);
-
+        const productVariants = products.filter(p => p["id"] == productId);
         if (productVariants.length === 0) {
           document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan.</p>";
           return;
         }
 
-        // Data umum dari varian pertama
         const baseProduct = productVariants[0];
+        const images = [baseProduct["Image 1"], baseProduct["Image 2"], baseProduct["Image 3"], baseProduct["Image 4"]].filter(Boolean);
 
-        // Render tampilan awal
         document.getElementById("productDetail").innerHTML = `
-          <div class="product-detail">
-            <img src="${baseProduct["Image 1"]}" alt="${baseProduct.Title}">
-            <div class="product-info">
-              <div class="product-title">${baseProduct.Title}</div>
-              <div id="productPrice"></div>
-              <div class="product-meta">⭐ 4.8 | Terjual 100+</div>
-              <p>${baseProduct.Diskripsi || "Deskripsi belum tersedia."}</p>
-              <h4>Pilih Varian:</h4>
-              <div id="variantButtons" class="product-variants"></div>
-              <div class="buy-links">
-                <a href="${baseProduct.Shopee || '#'}" target="_blank" class="shopee">Shopee</a>
-                <a href="${baseProduct.Tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
-              </div>
-            </div>
+          <div class="product-images">
+            ${images.map((img, i) => `<img src="${img}" class="${i===0?'active':''}" />`).join("")}
+          </div>
+          <div class="price-box">
+            <div class="price" id="productPrice"></div>
+            <div class="badge">Star</div>
+          </div>
+          <div class="meta">⭐ 4.8 | Terjual 100+</div>
+          <div class="variants">
+            <h4>Pilih Varian:</h4>
+            <div id="variantButtons"></div>
+          </div>
+          <div class="buy-links">
+            <a href="${baseProduct.Shopee || '#'}" target="_blank" class="shopee">Shopee</a>
+            <a href="${baseProduct.Tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
+          </div>
+          <div class="description">
+            <h3>Deskripsi Produk</h3>
+            <p>${baseProduct.Diskripsi || "Deskripsi belum tersedia."}</p>
           </div>
         `;
 
+        // Handle varian
         const variantButtons = document.getElementById("variantButtons");
         const priceBox = document.getElementById("productPrice");
 
-        // Tambahkan tombol varian
         productVariants.forEach((variant, index) => {
           const btn = document.createElement("button");
           btn.textContent = variant.Varian;
           btn.addEventListener("click", () => {
-            // Update harga
             priceBox.innerHTML = `
-              <span>Rp ${Number(variant.Price).toLocaleString("id-ID")}</span>
-              ${variant.Diskon ? `<span style="margin-left:10px;color:#777;text-decoration:line-through">Rp ${Number(variant.Diskon).toLocaleString("id-ID")}</span>` : ""}
+              Rp ${Number(variant.Price).toLocaleString("id-ID")}
+              ${variant.Diskon ? `<span class="old-price">Rp ${Number(variant.Diskon).toLocaleString("id-ID")}</span>` : ""}
             `;
-
-            // Highlight tombol aktif
-            document.querySelectorAll(".product-variants button").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".variants button").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
           });
           variantButtons.appendChild(btn);
-
-          // Pilih varian pertama sebagai default
-          if (index === 0) {
-            btn.click();
-          }
+          if (index === 0) btn.click();
         });
 
+        // Auto slide gambar
+        let current = 0;
+        setInterval(() => {
+          const imgs = document.querySelectorAll(".product-images img");
+          imgs[current].classList.remove("active");
+          current = (current + 1) % imgs.length;
+          imgs[current].classList.add("active");
+        }, 3000);
+
       } catch (err) {
-        document.getElementById("productDetail").innerHTML = "<p>Gagal memuat detail produk.</p>";
         console.error(err);
+        document.getElementById("productDetail").innerHTML = "<p>Gagal memuat detail produk.</p>";
       }
     }
-
     fetchProductDetail();
   </script>
 </body>
 </html>
-
