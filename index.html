@@ -14,7 +14,7 @@
     .search-bar input{width:100%;padding:10px;border-radius:8px;border:none;font-size:1rem;}
     .market-links a{margin-left:10px;text-decoration:none;padding:8px 12px;border-radius:8px;color:#fff;font-weight:600;}
     .market-links .instagram {background:#e1306c;} /* pink khas Instagram */
-.market-links .tiktok {background:#010101;}     /* hitam khas TikTok */
+    .market-links .tiktok {background:#010101;}     /* hitam khas TikTok */
 
     .banner{width:100%;height:220px;overflow:hidden;}
     .banner img{width:100%;height:100%;object-fit:cover;}
@@ -86,9 +86,9 @@
   </div>
   <div class="search-bar"><input type="text" id="searchInput" placeholder="Cari produk..."></div>
   <div class="market-links">
-  <a href="https://www.instagram.com/intanmutiaracell/" target="_blank" class="instagram">Instagram</a>
-  <a href="https://www.tiktok.com/@intanmutiaracell" target="_blank" class="tiktok">TikTok</a>
-</div>
+    <a href="https://www.instagram.com/intanmutiaracell/" target="_blank" class="instagram">Instagram</a>
+    <a href="https://www.tiktok.com/@intanmutiaracell" target="_blank" class="tiktok">TikTok</a>
+  </div>
 </header>
 
 <div class="banner">
@@ -142,21 +142,21 @@
   const pagination = document.getElementById("pagination");
 
   const logoMap = {
-  "All": "All.png",
-  "iPhone": "iPhone.png",
-  "Oppo": "Oppo.png",
-  "Vivo": "Vivo.png",
-  "Samsung": "Samsung.png",
-  "Xiaomi": "Xiaomi.png",
-  "Realme": "Realme.png",
-  "Infinix": "Infinix.png",
-  "Tecno": "Tecno.png",
-  "iTel": "iTel.png",
-  "Nokia": "Nokia.png",
-  "ZTE": "ZTE.png",
-  "Asus": "Asus.png",
-  "Huawei": "Huawei.png",
-};
+    "All": "All.png",
+    "iPhone": "iPhone.png",
+    "Oppo": "Oppo.png",
+    "Vivo": "Vivo.png",
+    "Samsung": "Samsung.png",
+    "Xiaomi": "Xiaomi.png",
+    "Realme": "Realme.png",
+    "Infinix": "Infinix.png",
+    "Tecno": "Tecno.png",
+    "iTel": "iTel.png",
+    "Nokia": "Nokia.png",
+    "ZTE": "ZTE.png",
+    "Asus": "Asus.png",
+    "Huawei": "Huawei.png",
+  };
 
   async function fetchProducts() {
     try {
@@ -206,21 +206,31 @@
     let end = start + perPage;
     let paginated = filtered.slice(start, end);
 
-        paginated.forEach(p => {
+    paginated.forEach(p => {
+      const firstVariant = p.variants?.[0];
+      const imageUrl = p.images?.[0] || 'https://via.placeholder.com/200x200?text=No+Image';
+
+      const priceHTML = firstVariant
+        ? `
+          <span class="product-price">Rp ${Number(firstVariant.price).toLocaleString("id-ID")}</span>
+          ${firstVariant.diskon
+            ? `<span class="product-discount">Rp ${Number(firstVariant.diskon).toLocaleString("id-ID")}</span>`
+            : ""}
+        `
+        : `<span class="product-price">Harga tidak tersedia</span>`;
+
       let card = document.createElement("div");
       card.className = "product-card";
       card.innerHTML = `
         <a href="detail.html?id=${p.id}" style="text-decoration:none;color:inherit">
           <div class="product-image">
-            <img src="${p.image}" alt="${p.title}">
+            <img src="${imageUrl}" alt="${p.title}" 
+                 onerror="this.onerror=null;this.src='https://via.placeholder.com/200x200?text=No+Image';" />
             <span class="badge-cicilan">Cicilan 0%</span>
           </div>
           <div class="product-info">
             <div class="product-title">${p.title}</div>
-            <div>
-              <span class="product-price">${p.price}</span>
-              ${p.discount ? `<span class="product-discount">${p.discount}</span>` : ""}
-            </div>
+            <div>${priceHTML}</div>
             <div class="product-meta">⭐ ${p.rating || "4.8"} | Terjual ${p.sold || "100+"}</div>
           </div>
         </a>
