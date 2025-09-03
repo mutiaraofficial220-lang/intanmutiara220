@@ -141,6 +141,11 @@
   const categoryList = document.getElementById("categoryList");
   const pagination = document.getElementById("pagination");
 
+  // cache setting
+  const CACHE_KEY = "cachedProducts";
+  const CACHE_TIME_KEY = "cachedTime";
+  const CACHE_DURATION = 1000 * 60 * 5; // 5 menit
+
   const logoMap = {
     "All": "All.png",
     "iPhone": "iPhone.png",
@@ -158,11 +163,25 @@
     "Huawei": "Huawei.png",
   };
 
-  async function fetchProducts() {
+  async function fetchProducts(force = false) {
     try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+
+      if (!force && cached && cachedTime && (Date.now() - cachedTime < CACHE_DURATION)) {
+        products = JSON.parse(cached);
+        generateCategories();
+        renderProducts();
+        return;
+      }
+
       const res = await fetch(apiURL);
       const data = await res.json();
       products = data;
+
+      localStorage.setItem(CACHE_KEY, JSON.stringify(products));
+      localStorage.setItem(CACHE_TIME_KEY, Date.now());
+
       generateCategories();
       renderProducts();
     } catch (err) {
@@ -291,7 +310,6 @@
     renderProducts(searchInput.value);
   });
 
+  // load data awal (pakai cache kalau ada)
   fetchProducts();
 </script>
-</body>
-</html>
