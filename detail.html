@@ -26,7 +26,7 @@
       z-index: 10;
     }
 
-    /* Gambar produk */
+    /* Gambar produk (slider manual) */
     .product-images {
       width: 100%;
       max-height: 350px;
@@ -42,6 +42,21 @@
     .product-images img.active {
       display: block;
     }
+    .slider-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      font-size: 20px;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 50%;
+      z-index: 5;
+    }
+    .slider-btn.left { left: 10px; }
+    .slider-btn.right { right: 10px; }
 
     /* Harga */
     .price-box {
@@ -147,6 +162,7 @@
       font-size: 14px;
       color: #444;
       line-height: 1.5;
+      margin-bottom: 10px;
     }
 
     /* Tombol bawah */
@@ -213,9 +229,17 @@
       const variants = baseProduct.variants || [];
       let selectedVariant = variants.length > 0 ? variants[0] : null;
 
+      // rapikan deskripsi (buat paragraf dari newline)
+      const formattedDesc = (baseProduct.deskripsi || "Deskripsi belum tersedia.")
+        .split(/\n+/)
+        .map(line => `<p>${line.trim()}</p>`)
+        .join("");
+
       // render awal
       document.getElementById("productDetail").innerHTML = `
         <div class="product-images">
+          <button class="slider-btn left">❮</button>
+          <button class="slider-btn right">❯</button>
           ${images.map((img, i) => `<img src="${img}" class="${i === 0 ? 'active' : ''}" />`).join("")}
         </div>
 
@@ -253,7 +277,7 @@
 
         <div class="description">
           <h3>Deskripsi Produk</h3>
-          <p>${baseProduct.deskripsi || "Deskripsi belum tersedia."}</p>
+          ${formattedDesc}
         </div>
 
         <div class="buy-links">
@@ -262,7 +286,7 @@
         </div>
       `;
 
-      // event listener tombol varian (tanpa render ulang halaman)
+      // event listener tombol varian
       document.querySelectorAll(".variant-btn").forEach(btn => {
         btn.addEventListener("click", () => {
           document.querySelectorAll(".variant-btn").forEach(b => b.classList.remove("active"));
@@ -271,7 +295,6 @@
           const idx = btn.getAttribute("data-index");
           selectedVariant = variants[idx];
 
-          // update harga saja
           document.getElementById("priceBox").innerHTML = `
             Rp ${Number(selectedVariant.price).toLocaleString("id-ID")}
             ${selectedVariant.diskon ? `<span class="old-price">Rp ${Number(selectedVariant.diskon).toLocaleString("id-ID")}</span>` : ""}
@@ -280,16 +303,22 @@
         });
       });
 
-      // Auto slide gambar
+      // manual slider
       let current = 0;
-      setInterval(() => {
-        const imgs = document.querySelectorAll(".product-images img");
-        if (imgs.length > 0) {
-          imgs[current].classList.remove("active");
-          current = (current + 1) % imgs.length;
-          imgs[current].classList.add("active");
-        }
-      }, 3000);
+      const imgs = document.querySelectorAll(".product-images img");
+      const showImage = (index) => {
+        imgs.forEach((img, i) => img.classList.toggle("active", i === index));
+      };
+
+      document.querySelector(".slider-btn.left").addEventListener("click", () => {
+        current = (current - 1 + imgs.length) % imgs.length;
+        showImage(current);
+      });
+
+      document.querySelector(".slider-btn.right").addEventListener("click", () => {
+        current = (current + 1) % imgs.length;
+        showImage(current);
+      });
 
     } catch (err) {
       console.error(err);
@@ -298,5 +327,6 @@
   }
 
   fetchProductDetail();
-</script>
-
+  </script>
+</body>
+</html>
