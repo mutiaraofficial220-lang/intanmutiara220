@@ -181,120 +181,121 @@
   <div id="productDetail">Memuat detail produk...</div>
 
   <script>
-    const apiURL = "https://script.google.com/macros/s/AKfycbwhEx_j7s685ef89RppbIwjgwVePZyldnx8jC33lchkmirpWtr4Pm1sqhk5L7NjH_M6/exec";
-    const CACHE_KEY = "cachedProducts";
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get("id");
+  const apiURL = "https://script.google.com/macros/s/AKfycbwhEx_j7s685ef89RppbIwjgwVePZyldnx8jC33lchkmirpWtr4Pm1sqhk5L7NjH_M6/exec";
+  const CACHE_KEY = "cachedProducts";
+  const urlParams = new URLSearchParams(window.location.search);
+  const productId = urlParams.get("id");
 
-    async function fetchProductDetail() {
-      try {
-        let products = [];
-        const cached = localStorage.getItem(CACHE_KEY);
-        if (cached) {
-          products = JSON.parse(cached);
-        } else {
-          const res = await fetch(apiURL);
-          products = await res.json();
-          localStorage.setItem(CACHE_KEY, JSON.stringify(products));
-        }
-
-        if (!productId) {
-          document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan (ID kosong).</p>";
-          return;
-        }
-
-        const baseProduct = products.find(p => p.id === productId.trim());
-        if (!baseProduct) {
-          document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan.</p>";
-          return;
-        }
-
-        const images = baseProduct.images || [];
-        const variants = baseProduct.variants || [];
-        let selectedVariant = variants.length > 0 ? variants[0] : null;
-
-        function renderDetail() {
-          document.getElementById("productDetail").innerHTML = `
-            <div class="product-images">
-              ${images.map((img, i) => `<img src="${img}" class="${i === 0 ? 'active' : ''}" />`).join("")}
-            </div>
-
-            <div class="price-box" id="priceBox">
-              Rp ${selectedVariant ? Number(selectedVariant.price).toLocaleString("id-ID") : "0"}
-              ${selectedVariant && selectedVariant.diskon ? `<span class="old-price">Rp ${Number(selectedVariant.diskon).toLocaleString("id-ID")}</span>` : ""}
-              <span class="cicilan">Cicilan 0%</span>
-            </div>
-
-            <div class="meta">⭐ 4.8 | Terjual 17+</div>
-
-            <div class="title">${baseProduct.title}</div>
-
-            ${variants.length > 1 ? `
-              <div class="variants">
-                <h4>Pilih Varian:</h4>
-                ${variants.map((v, i) => `
-                  <button class="variant-btn ${i === 0 ? 'active' : ''}" data-index="${i}">
-                    ${v.varian || "Varian " + (i+1)}
-                  </button>
-                `).join("")}
-              </div>
-            ` : ""}
-
-            <div class="store">
-              <div class="info">
-                <img src="Intan Mutiara Cell.jpg" alt="logo toko">
-                <div class="detail">
-                  <strong>INTAN MUTIARA CELL HP</strong><br>
-                  <small>KOTA SURABAYA</small>
-                </div>
-              </div>
-              <button onclick="window.location.href='index.html'">Kunjungi</button>
-            </div>
-
-            <div class="description">
-              <h3>Deskripsi Produk</h3>
-              <p>${baseProduct.deskripsi || "Deskripsi belum tersedia."}</p>
-            </div>
-
-            <div class="buy-links">
-              <a href="${baseProduct.shopee || '#'}" target="_blank" class="shopee">Shopee</a>
-              <a href="${baseProduct.tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
-            </div>
-          `;
-
-          // Tambahkan event listener untuk varian
-          document.querySelectorAll(".variant-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-              document.querySelectorAll(".variant-btn").forEach(b => b.classList.remove("active"));
-              btn.classList.add("active");
-              const idx = btn.getAttribute("data-index");
-              selectedVariant = variants[idx];
-              renderDetail(); // render ulang dengan harga baru
-            });
-          });
-        }
-
-        renderDetail();
-
-        // Auto slide gambar
-        let current = 0;
-        setInterval(() => {
-          const imgs = document.querySelectorAll(".product-images img");
-          if (imgs.length > 0) {
-            imgs[current].classList.remove("active");
-            current = (current + 1) % imgs.length;
-            imgs[current].classList.add("active");
-          }
-        }, 3000);
-
-      } catch (err) {
-        console.error(err);
-        document.getElementById("productDetail").innerHTML = "<p>Gagal memuat detail produk.</p>";
+  async function fetchProductDetail() {
+    try {
+      let products = [];
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        products = JSON.parse(cached);
+      } else {
+        const res = await fetch(apiURL);
+        products = await res.json();
+        localStorage.setItem(CACHE_KEY, JSON.stringify(products));
       }
+
+      if (!productId) {
+        document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan (ID kosong).</p>";
+        return;
+      }
+
+      const baseProduct = products.find(p => p.id === productId.trim());
+      if (!baseProduct) {
+        document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan.</p>";
+        return;
+      }
+
+      const images = baseProduct.images || [];
+      const variants = baseProduct.variants || [];
+      let selectedVariant = variants.length > 0 ? variants[0] : null;
+
+      // render awal
+      document.getElementById("productDetail").innerHTML = `
+        <div class="product-images">
+          ${images.map((img, i) => `<img src="${img}" class="${i === 0 ? 'active' : ''}" />`).join("")}
+        </div>
+
+        <div class="price-box" id="priceBox">
+          Rp ${selectedVariant ? Number(selectedVariant.price).toLocaleString("id-ID") : "0"}
+          ${selectedVariant && selectedVariant.diskon ? `<span class="old-price">Rp ${Number(selectedVariant.diskon).toLocaleString("id-ID")}</span>` : ""}
+          <span class="cicilan">Cicilan 0%</span>
+        </div>
+
+        <div class="meta">⭐ 4.8 | Terjual 17+</div>
+
+        <div class="title">${baseProduct.title}</div>
+
+        ${variants.length > 1 ? `
+          <div class="variants">
+            <h4>Pilih Varian:</h4>
+            ${variants.map((v, i) => `
+              <button class="variant-btn ${i === 0 ? 'active' : ''}" data-index="${i}">
+                ${v.varian || "Varian " + (i+1)}
+              </button>
+            `).join("")}
+          </div>
+        ` : ""}
+
+        <div class="store">
+          <div class="info">
+            <img src="Intan Mutiara Cell.jpg" alt="logo toko">
+            <div class="detail">
+              <strong>INTAN MUTIARA CELL HP</strong><br>
+              <small>KOTA SURABAYA</small>
+            </div>
+          </div>
+          <button onclick="window.location.href='index.html'">Kunjungi</button>
+        </div>
+
+        <div class="description">
+          <h3>Deskripsi Produk</h3>
+          <p>${baseProduct.deskripsi || "Deskripsi belum tersedia."}</p>
+        </div>
+
+        <div class="buy-links">
+          <a href="${baseProduct.shopee || '#'}" target="_blank" class="shopee">Shopee</a>
+          <a href="${baseProduct.tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
+        </div>
+      `;
+
+      // event listener tombol varian (tanpa render ulang halaman)
+      document.querySelectorAll(".variant-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".variant-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          const idx = btn.getAttribute("data-index");
+          selectedVariant = variants[idx];
+
+          // update harga saja
+          document.getElementById("priceBox").innerHTML = `
+            Rp ${Number(selectedVariant.price).toLocaleString("id-ID")}
+            ${selectedVariant.diskon ? `<span class="old-price">Rp ${Number(selectedVariant.diskon).toLocaleString("id-ID")}</span>` : ""}
+            <span class="cicilan">Cicilan 0%</span>
+          `;
+        });
+      });
+
+      // Auto slide gambar
+      let current = 0;
+      setInterval(() => {
+        const imgs = document.querySelectorAll(".product-images img");
+        if (imgs.length > 0) {
+          imgs[current].classList.remove("active");
+          current = (current + 1) % imgs.length;
+          imgs[current].classList.add("active");
+        }
+      }, 3000);
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById("productDetail").innerHTML = "<p>Gagal memuat detail produk.</p>";
     }
+  }
 
-    fetchProductDetail();
-  </script>
-
-</body>
-</html>
+  fetchProductDetail();
+</script>
