@@ -7,14 +7,29 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+
+    /* Tombol kembali */
+    .back-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.4);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
     }
 
     .product-images {
-      display: flex;
+      width: 100%;
+      max-height: 350px;
       overflow: hidden;
-      height: 300px;
-      margin-bottom: 20px;
+      position: relative;
     }
 
     .product-images img {
@@ -22,7 +37,6 @@
       height: auto;
       display: none;
       object-fit: cover;
-      border-radius: 10px;
     }
 
     .product-images img.active {
@@ -30,65 +44,77 @@
     }
 
     .price-box {
+      padding: 15px;
       font-size: 24px;
       font-weight: bold;
-      margin-bottom: 5px;
+      color: #d32f2f;
+    }
+
+    .cicilan {
+      font-size: 14px;
+      color: #333;
+      background: #f2f2f2;
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 5px;
+      margin-top: 5px;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: bold;
+      padding: 0 15px 10px;
+    }
+
+    .store {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      border-top: 1px solid #eee;
+      border-bottom: 1px solid #eee;
+    }
+
+    .store .logo {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .price-box .badge {
-      background-color: gold;
-      padding: 5px 10px;
+    .store .logo img {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+    }
+
+    .store button {
+      background: #ff5722;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
       border-radius: 5px;
-      font-size: 14px;
-      color: black;
-    }
-
-    .old-price {
-      text-decoration: line-through;
-      color: grey;
-      font-size: 16px;
-      margin-left: 10px;
-    }
-
-    .meta {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 20px;
-    }
-
-    .variants {
-      margin-top: 20px;
-    }
-
-    .variants button {
-      margin: 5px;
-      padding: 10px 20px;
-      border: 1px solid #ccc;
-      background-color: white;
       cursor: pointer;
-      border-radius: 5px;
     }
 
-    .variants button.active {
-      background-color: #007bff;
-      color: white;
+    .description {
+      padding: 15px;
     }
 
     .buy-links {
-      margin: 20px 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
     }
 
     .buy-links a {
-      display: inline-block;
-      margin-right: 10px;
-      padding: 10px 20px;
-      background-color: green;
+      flex: 1;
+      text-align: center;
+      padding: 15px 0;
       color: white;
+      font-weight: bold;
       text-decoration: none;
-      border-radius: 5px;
     }
 
     .buy-links a.shopee {
@@ -98,21 +124,12 @@
     .buy-links a.tokopedia {
       background-color: #03ac0e;
     }
-
-    .description {
-      margin-top: 30px;
-    }
-
-    .description h3 {
-      margin-bottom: 10px;
-    }
-
-    .description p {
-      white-space: pre-wrap;
-    }
   </style>
 </head>
 <body>
+
+  <!-- Tombol kembali -->
+  <div class="back-btn" onclick="history.back()">←</div>
 
   <div id="productDetail">Memuat detail produk...</div>
 
@@ -137,50 +154,38 @@
           return;
         }
 
-        const productVariants = baseProduct.variants || [];
         const images = baseProduct.images || [];
 
         document.getElementById("productDetail").innerHTML = `
           <div class="product-images">
             ${images.map((img, i) => `<img src="${img}" class="${i === 0 ? 'active' : ''}" />`).join("")}
           </div>
+
           <div class="price-box">
-            <div class="price" id="productPrice"></div>
-            <div class="badge">Star</div>
+            Rp ${Number(baseProduct.price).toLocaleString("id-ID")}
+            <div class="cicilan">Cicilan 0%</div>
           </div>
-          <div class="meta">⭐ 4.8 | Terjual 100+</div>
-          <div class="variants">
-            <h4>Pilih Varian:</h4>
-            <div id="variantButtons"></div>
+
+          <div class="title">${baseProduct.nama}</div>
+
+          <div class="store">
+            <div class="logo">
+              <img src="https://cdn-icons-png.flaticon.com/512/3106/3106921.png" alt="logo toko">
+              <span>${baseProduct.toko}</span>
+            </div>
+            <button onclick="window.location.href='index.html'">Kunjungi</button>
           </div>
-          <div class="buy-links">
-            <a href="${baseProduct.shopee || '#'}" target="_blank" class="shopee">Shopee</a>
-            <a href="${baseProduct.tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
-          </div>
+
           <div class="description">
             <h3>Deskripsi Produk</h3>
             <p>${baseProduct.deskripsi || "Deskripsi belum tersedia."}</p>
           </div>
+
+          <div class="buy-links">
+            <a href="${baseProduct.shopee || '#'}" target="_blank" class="shopee">Shopee</a>
+            <a href="${baseProduct.tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
+          </div>
         `;
-
-        // Buat tombol varian
-        const variantButtons = document.getElementById("variantButtons");
-        const priceBox = document.getElementById("productPrice");
-
-        productVariants.forEach((variant, index) => {
-          const btn = document.createElement("button");
-          btn.textContent = variant.varian || "Varian";
-          btn.addEventListener("click", () => {
-            priceBox.innerHTML = `
-              Rp ${Number(variant.price).toLocaleString("id-ID")}
-              ${variant.diskon ? `<span class="old-price">Rp ${Number(variant.diskon).toLocaleString("id-ID")}</span>` : ""}
-            `;
-            document.querySelectorAll(".variants button").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-          });
-          variantButtons.appendChild(btn);
-          if (index === 0) btn.click(); // otomatis pilih varian pertama
-        });
 
         // Auto slide gambar
         let current = 0;
@@ -204,4 +209,3 @@
 
 </body>
 </html>
-
