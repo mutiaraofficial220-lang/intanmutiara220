@@ -128,7 +128,7 @@
         }
 
         const baseProduct = productVariants[0];
-        const images = [baseProduct["Image 1"], baseProduct["Image 2"], baseProduct["Image 3"], baseProduct["Image 4"]].filter(Boolean);
+        const images = baseProduct.images || [];
 
         document.getElementById("productDetail").innerHTML = `
           <div class="product-images">
@@ -159,7 +159,7 @@
 
         productVariants.forEach((variant, index) => {
           const btn = document.createElement("button");
-          btn.textContent = variant.Varian || "Default";
+          btn.textContent = variant.variant || "Default";
           btn.addEventListener("click", () => {
             priceBox.innerHTML = `
               Rp ${Number(variant.Price).toLocaleString("id-ID")}
@@ -192,4 +192,5 @@
   </script>
 </body>
 </html>
+
 
