@@ -78,6 +78,31 @@
       padding: 0 15px 10px;
     }
 
+    /* Varian */
+    .variants {
+      padding: 10px 15px;
+    }
+    .variants h4 {
+      margin: 0 0 8px;
+      font-size: 14px;
+    }
+    .variant-btn {
+      display: inline-block;
+      margin: 4px;
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      background: #f9f9f9;
+    }
+    .variant-btn.active {
+      border-color: #ff5722;
+      background: #ffe5dc;
+      color: #ff5722;
+      font-weight: bold;
+    }
+
     /* Info toko */
     .store {
       display: flex;
@@ -185,44 +210,71 @@
         }
 
         const images = baseProduct.images || [];
-        const defaultVariant = baseProduct.variants.length > 0 ? baseProduct.variants[0] : null;
+        const variants = baseProduct.variants || [];
+        let selectedVariant = variants.length > 0 ? variants[0] : null;
 
-        document.getElementById("productDetail").innerHTML = `
-          <div class="product-images">
-            ${images.map((img, i) => `<img src="${img}" class="${i === 0 ? 'active' : ''}" />`).join("")}
-          </div>
-
-          <div class="price-box">
-            Rp ${defaultVariant ? Number(defaultVariant.price).toLocaleString("id-ID") : "0"}
-            ${defaultVariant && defaultVariant.diskon ? `<span class="old-price">Rp ${Number(defaultVariant.diskon).toLocaleString("id-ID")}</span>` : ""}
-            <span class="cicilan">Cicilan 0%</span>
-          </div>
-
-          <div class="meta">⭐ 4.8 | Terjual 17+</div>
-
-          <div class="title">${baseProduct.title}</div>
-
-          <div class="store">
-            <div class="info">
-              <img src="Intan Mutiara Cell.jpg" alt="logo toko"> <!-- Sama persis dengan index.html -->
-              <div class="detail">
-                <strong>INTAN MUTIARA CELL HP</strong><br>
-                <small>KOTA SURABAYA</small>
-              </div>
+        function renderDetail() {
+          document.getElementById("productDetail").innerHTML = `
+            <div class="product-images">
+              ${images.map((img, i) => `<img src="${img}" class="${i === 0 ? 'active' : ''}" />`).join("")}
             </div>
-            <button onclick="window.location.href='index.html'">Kunjungi</button>
-          </div>
 
-          <div class="description">
-            <h3>Deskripsi Produk</h3>
-            <p>${baseProduct.deskripsi || "Deskripsi belum tersedia."}</p>
-          </div>
+            <div class="price-box" id="priceBox">
+              Rp ${selectedVariant ? Number(selectedVariant.price).toLocaleString("id-ID") : "0"}
+              ${selectedVariant && selectedVariant.diskon ? `<span class="old-price">Rp ${Number(selectedVariant.diskon).toLocaleString("id-ID")}</span>` : ""}
+              <span class="cicilan">Cicilan 0%</span>
+            </div>
 
-          <div class="buy-links">
-            <a href="${baseProduct.shopee || '#'}" target="_blank" class="shopee">Shopee</a>
-            <a href="${baseProduct.tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
-          </div>
-        `;
+            <div class="meta">⭐ 4.8 | Terjual 17+</div>
+
+            <div class="title">${baseProduct.title}</div>
+
+            ${variants.length > 1 ? `
+              <div class="variants">
+                <h4>Pilih Varian:</h4>
+                ${variants.map((v, i) => `
+                  <button class="variant-btn ${i === 0 ? 'active' : ''}" data-index="${i}">
+                    ${v.varian || "Varian " + (i+1)}
+                  </button>
+                `).join("")}
+              </div>
+            ` : ""}
+
+            <div class="store">
+              <div class="info">
+                <img src="Intan Mutiara Cell.jpg" alt="logo toko">
+                <div class="detail">
+                  <strong>INTAN MUTIARA CELL HP</strong><br>
+                  <small>KOTA SURABAYA</small>
+                </div>
+              </div>
+              <button onclick="window.location.href='index.html'">Kunjungi</button>
+            </div>
+
+            <div class="description">
+              <h3>Deskripsi Produk</h3>
+              <p>${baseProduct.deskripsi || "Deskripsi belum tersedia."}</p>
+            </div>
+
+            <div class="buy-links">
+              <a href="${baseProduct.shopee || '#'}" target="_blank" class="shopee">Shopee</a>
+              <a href="${baseProduct.tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
+            </div>
+          `;
+
+          // Tambahkan event listener untuk varian
+          document.querySelectorAll(".variant-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+              document.querySelectorAll(".variant-btn").forEach(b => b.classList.remove("active"));
+              btn.classList.add("active");
+              const idx = btn.getAttribute("data-index");
+              selectedVariant = variants[idx];
+              renderDetail(); // render ulang dengan harga baru
+            });
+          });
+        }
+
+        renderDetail();
 
         // Auto slide gambar
         let current = 0;
