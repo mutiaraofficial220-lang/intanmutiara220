@@ -5,53 +5,147 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Detail Produk</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #fff; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
 
     /* Tombol kembali */
     .back-btn {
-      position: absolute; top: 10px; left: 10px;
-      background: rgba(0,0,0,0.5); color: white;
-      padding: 5px 10px; border-radius: 50%; font-size: 16px;
-      cursor: pointer; z-index: 10;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 10;
     }
 
-    /* Skeleton loading */
-    .skeleton { background: #eee; border-radius: 6px; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% {opacity:1;} 50% {opacity:.5;} 100% {opacity:1;} }
-    .skeleton-img { width: 100%; height: 200px; margin-bottom: 10px; }
-    .skeleton-text { width: 80%; height: 18px; margin: 8px 15px; }
-
     /* Gambar produk */
-    .product-images { width: 100%; max-height: 350px; overflow: hidden; position: relative; }
-    .product-images img { width: 100%; height: auto; display: none; object-fit: cover; }
-    .product-images img.active { display: block; }
+    .product-images {
+      width: 100%;
+      max-height: 350px;
+      overflow: hidden;
+      position: relative;
+    }
+    .product-images img {
+      width: 100%;
+      height: auto;
+      display: none;
+      object-fit: cover;
+    }
+    .product-images img.active {
+      display: block;
+    }
 
     /* Harga */
-    .price-box { padding: 10px 15px; font-size: 24px; font-weight: bold; color: #d32f2f; }
-    .cicilan { font-size: 14px; color: #333; background: #f9dcdc; display: inline-block; padding: 3px 8px; border-radius: 5px; margin-left: 8px; }
-    .old-price { text-decoration: line-through; color: grey; font-size: 14px; margin-left: 10px; }
-    .meta { font-size: 13px; color: #666; padding: 0 15px 10px; }
+    .price-box {
+      padding: 10px 15px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #d32f2f;
+    }
+    .cicilan {
+      font-size: 14px;
+      color: #333;
+      background: #f9dcdc;
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 5px;
+      margin-left: 8px;
+    }
+    .old-price {
+      text-decoration: line-through;
+      color: grey;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+    .meta {
+      font-size: 13px;
+      color: #666;
+      padding: 0 15px 10px;
+    }
 
     /* Judul */
-    .title { font-size: 16px; font-weight: bold; padding: 0 15px 10px; }
+    .title {
+      font-size: 16px;
+      font-weight: bold;
+      padding: 0 15px 10px;
+    }
 
     /* Info toko */
-    .store { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-top: 1px solid #eee; border-bottom: 1px solid #eee; background: #fff; }
-    .store .info { display: flex; align-items: center; gap: 10px; }
-    .store .info img { width: 40px; height: 40px; border-radius: 50%; }
-    .store .detail { font-size: 14px; }
-    .store button { background: white; border: 1px solid #ff5722; color: #ff5722; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
+    .store {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 15px;
+      border-top: 1px solid #eee;
+      border-bottom: 1px solid #eee;
+      background: #fff;
+    }
+    .store .info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .store .info img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+    .store .detail {
+      font-size: 14px;
+    }
+    .store button {
+      background: white;
+      border: 1px solid #ff5722;
+      color: #ff5722;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
     /* Deskripsi */
-    .description { padding: 15px; }
-    .description h3 { font-size: 16px; margin-bottom: 8px; }
-    .description p { font-size: 14px; color: #444; line-height: 1.5; }
+    .description {
+      padding: 15px;
+    }
+    .description h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .description p {
+      font-size: 14px;
+      color: #444;
+      line-height: 1.5;
+    }
 
     /* Tombol bawah */
-    .buy-links { position: fixed; bottom: 0; left: 0; right: 0; display: flex; }
-    .buy-links a { flex: 1; text-align: center; padding: 15px 0; color: white; font-weight: bold; text-decoration: none; }
-    .buy-links a.shopee { background-color: #ee4d2d; }
-    .buy-links a.tokopedia { background-color: #03ac0e; }
+    .buy-links {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+    }
+    .buy-links a {
+      flex: 1;
+      text-align: center;
+      padding: 15px 0;
+      color: white;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .buy-links a.shopee {
+      background-color: #ee4d2d;
+    }
+    .buy-links a.tokopedia {
+      background-color: #03ac0e;
+    }
   </style>
 </head>
 <body>
@@ -59,92 +153,94 @@
   <!-- Tombol kembali -->
   <div class="back-btn" onclick="history.back()">←</div>
 
-  <!-- Skeleton loader -->
-  <div id="productDetail">
-    <div class="skeleton skeleton-img"></div>
-    <div class="skeleton skeleton-text"></div>
-    <div class="skeleton skeleton-text"></div>
-  </div>
+  <div id="productDetail">Memuat detail produk...</div>
 
   <script>
     const apiURL = "https://script.google.com/macros/s/AKfycbwhEx_j7s685ef89RppbIwjgwVePZyldnx8jC33lchkmirpWtr4Pm1sqhk5L7NjH_M6/exec";
+    const CACHE_KEY = "cachedProducts";
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get("id");
-    const cacheKey = "product_" + productId;
 
-    function renderProduct(baseProduct) {
-      const images = baseProduct.images || [];
-      const defaultVariant = baseProduct.variants.length > 0 ? baseProduct.variants[0] : null;
-
-      document.getElementById("productDetail").innerHTML = `
-        <div class="product-images">
-          ${images.map((img, i) => `<img src="${img}" class="${i===0?'active':''}" />`).join("")}
-        </div>
-
-        <div class="price-box">
-          Rp ${defaultVariant ? Number(defaultVariant.price).toLocaleString("id-ID") : "0"}
-          ${defaultVariant && defaultVariant.diskon ? `<span class="old-price">Rp ${Number(defaultVariant.diskon).toLocaleString("id-ID")}</span>` : ""}
-          <span class="cicilan">Cicilan 0%</span>
-        </div>
-
-        <div class="meta">⭐ 4.8 | Terjual 17+</div>
-        <div class="title">${baseProduct.title}</div>
-
-        <div class="store">
-          <div class="info">
-            <img src="Intan Mutiara Cell.jpg" alt="logo toko">
-            <div class="detail">
-              <strong>INTAN MUTIARA CELL HP</strong><br>
-              <small>KOTA SURABAYA</small>
-            </div>
-          </div>
-          <button onclick="window.location.href='index.html'">Kunjungi</button>
-        </div>
-
-        <div class="description">
-          <h3>Deskripsi Produk</h3>
-          <p>${baseProduct.deskripsi || "Deskripsi belum tersedia."}</p>
-        </div>
-
-        <div class="buy-links">
-          <a href="${baseProduct.shopee || '#'}" target="_blank" class="shopee">Shopee</a>
-          <a href="${baseProduct.tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
-        </div>
-      `;
-
-      // Slide otomatis
-      let current = 0;
-      setInterval(() => {
-        const imgs = document.querySelectorAll(".product-images img");
-        if (imgs.length > 0) {
-          imgs[current].classList.remove("active");
-          current = (current + 1) % imgs.length;
-          imgs[current].classList.add("active");
-        }
-      }, 3000);
-    }
-
-    // Tampilkan dari cache dulu (biar cepat)
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) renderProduct(JSON.parse(cached));
-
-    // Fetch update dari server
     async function fetchProductDetail() {
       try {
-        const res = await fetch(apiURL);
-        const products = await res.json();
-        const baseProduct = products.find(p => p.id === productId.trim());
-        if (baseProduct) {
-          localStorage.setItem(cacheKey, JSON.stringify(baseProduct));
-          renderProduct(baseProduct);
+        let products = [];
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          products = JSON.parse(cached);
         } else {
-          document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan.</p>";
+          const res = await fetch(apiURL);
+          products = await res.json();
+          localStorage.setItem(CACHE_KEY, JSON.stringify(products));
         }
+
+        if (!productId) {
+          document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan (ID kosong).</p>";
+          return;
+        }
+
+        const baseProduct = products.find(p => p.id === productId.trim());
+        if (!baseProduct) {
+          document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan.</p>";
+          return;
+        }
+
+        const images = baseProduct.images || [];
+        const defaultVariant = baseProduct.variants.length > 0 ? baseProduct.variants[0] : null;
+
+        document.getElementById("productDetail").innerHTML = `
+          <div class="product-images">
+            ${images.map((img, i) => `<img src="${img}" class="${i === 0 ? 'active' : ''}" />`).join("")}
+          </div>
+
+          <div class="price-box">
+            Rp ${defaultVariant ? Number(defaultVariant.price).toLocaleString("id-ID") : "0"}
+            ${defaultVariant && defaultVariant.diskon ? `<span class="old-price">Rp ${Number(defaultVariant.diskon).toLocaleString("id-ID")}</span>` : ""}
+            <span class="cicilan">Cicilan 0%</span>
+          </div>
+
+          <div class="meta">⭐ 4.8 | Terjual 17+</div>
+
+          <div class="title">${baseProduct.title}</div>
+
+          <div class="store">
+            <div class="info">
+              <img src="Intan Mutiara Cell.jpg" alt="logo toko"> <!-- Sama persis dengan index.html -->
+              <div class="detail">
+                <strong>INTAN MUTIARA CELL HP</strong><br>
+                <small>KOTA SURABAYA</small>
+              </div>
+            </div>
+            <button onclick="window.location.href='index.html'">Kunjungi</button>
+          </div>
+
+          <div class="description">
+            <h3>Deskripsi Produk</h3>
+            <p>${baseProduct.deskripsi || "Deskripsi belum tersedia."}</p>
+          </div>
+
+          <div class="buy-links">
+            <a href="${baseProduct.shopee || '#'}" target="_blank" class="shopee">Shopee</a>
+            <a href="${baseProduct.tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
+          </div>
+        `;
+
+        // Auto slide gambar
+        let current = 0;
+        setInterval(() => {
+          const imgs = document.querySelectorAll(".product-images img");
+          if (imgs.length > 0) {
+            imgs[current].classList.remove("active");
+            current = (current + 1) % imgs.length;
+            imgs[current].classList.add("active");
+          }
+        }, 3000);
+
       } catch (err) {
         console.error(err);
         document.getElementById("productDetail").innerHTML = "<p>Gagal memuat detail produk.</p>";
       }
     }
+
     fetchProductDetail();
   </script>
 
