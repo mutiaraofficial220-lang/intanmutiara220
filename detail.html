@@ -2,107 +2,119 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Detail Produk</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f5f5f5;
+      margin: 20px;
     }
-    .product-container {
-      background: #fff;
-      padding: 15px;
-    }
-    /* Gambar slider */
+
     .product-images {
-      position: relative;
-      width: 100%;
-      max-width: 500px;
-      margin: auto;
+      display: flex;
       overflow: hidden;
-      border-radius: 10px;
+      height: 300px;
+      margin-bottom: 20px;
     }
+
     .product-images img {
       width: 100%;
+      height: auto;
       display: none;
+      object-fit: cover;
+      border-radius: 10px;
     }
+
     .product-images img.active {
       display: block;
     }
-    .price {
-      font-size: 22px;
+
+    .price-box {
+      font-size: 24px;
       font-weight: bold;
-      color: #d32f2f;
-      margin-top: 10px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
+
+    .price-box .badge {
+      background-color: gold;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      color: black;
+    }
+
     .old-price {
       text-decoration: line-through;
-      color: #777;
-      margin-left: 10px;
+      color: grey;
       font-size: 16px;
+      margin-left: 10px;
     }
-    .badge {
-      display: inline-block;
-      padding: 3px 8px;
-      background: #ff5722;
-      color: #fff;
-      font-size: 12px;
-      border-radius: 4px;
-      margin-top: 5px;
-    }
+
     .meta {
-      margin-top: 10px;
       font-size: 14px;
-      color: #555;
+      color: #666;
+      margin-bottom: 20px;
     }
+
     .variants {
-      margin: 15px 0;
-    }
-    .variants button {
-      margin: 4px;
-      padding: 6px 12px;
-      border-radius: 6px;
-      border: 1px solid #1e40af;
-      cursor: pointer;
-      background: #fff;
-    }
-    .variants button.active {
-      background: #1e40af;
-      color: #fff;
-      font-weight: bold;
-    }
-    .buy-links {
-      display: flex;
-      gap: 10px;
       margin-top: 20px;
     }
+
+    .variants button {
+      margin: 5px;
+      padding: 10px 20px;
+      border: 1px solid #ccc;
+      background-color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .variants button.active {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .buy-links {
+      margin: 20px 0;
+    }
+
     .buy-links a {
-      flex: 1;
-      text-align: center;
-      padding: 12px;
-      border-radius: 6px;
+      display: inline-block;
+      margin-right: 10px;
+      padding: 10px 20px;
+      background-color: green;
+      color: white;
       text-decoration: none;
-      color: #fff;
-      font-weight: bold;
+      border-radius: 5px;
     }
-    .buy-links a.shopee { background: #ff5722; }
-    .buy-links a.tokopedia { background: #4caf50; }
+
+    .buy-links a.shopee {
+      background-color: #ee4d2d;
+    }
+
+    .buy-links a.tokopedia {
+      background-color: #03ac0e;
+    }
+
     .description {
-      background: #fff;
-      margin-top: 10px;
-      padding: 15px;
-      border-radius: 8px;
+      margin-top: 30px;
     }
+
     .description h3 {
-      margin-top: 0;
-      font-size: 18px;
       margin-bottom: 10px;
+    }
+
+    .description p {
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-  <div class="product-container" id="productDetail">Memuat...</div>
+
+  <div id="productDetail">Memuat detail produk...</div>
 
   <script>
     const apiURL = "https://script.google.com/macros/s/AKfycbxJ2kSMPzRadOW2MMAS6eLo5EN-FIehkGM822jiH8xfFicM7loeQp_bz1irUmvnU2djjg/exec";
@@ -114,25 +126,23 @@
         const res = await fetch(apiURL);
         const products = await res.json();
 
-        // pastikan id ada
         if (!productId) {
           document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan (ID kosong).</p>";
           return;
         }
 
-        // ambil semua varian dengan kode produk yang sama
-        const productVariants = products.filter(p => p["id"] === productId.trim());
-        if (productVariants.length === 0) {
+        const baseProduct = products.find(p => p.id === productId.trim());
+        if (!baseProduct) {
           document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan.</p>";
           return;
         }
 
-        const baseProduct = productVariants[0];
+        const productVariants = baseProduct.variants || [];
         const images = baseProduct.images || [];
 
         document.getElementById("productDetail").innerHTML = `
           <div class="product-images">
-            ${images.map((img, i) => `<img src="${img}" class="${i===0?'active':''}" />`).join("")}
+            ${images.map((img, i) => `<img src="${img}" class="${i === 0 ? 'active' : ''}" />`).join("")}
           </div>
           <div class="price-box">
             <div class="price" id="productPrice"></div>
@@ -144,32 +154,32 @@
             <div id="variantButtons"></div>
           </div>
           <div class="buy-links">
-            <a href="${baseProduct.Shopee || '#'}" target="_blank" class="shopee">Shopee</a>
-            <a href="${baseProduct.Tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
+            <a href="${baseProduct.shopee || '#'}" target="_blank" class="shopee">Shopee</a>
+            <a href="${baseProduct.tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
           </div>
           <div class="description">
             <h3>Deskripsi Produk</h3>
-            <p>${baseProduct.Diskripsi || "Deskripsi belum tersedia."}</p>
+            <p>${baseProduct.deskripsi || "Deskripsi belum tersedia."}</p>
           </div>
         `;
 
-        // Handle varian
+        // Buat tombol varian
         const variantButtons = document.getElementById("variantButtons");
         const priceBox = document.getElementById("productPrice");
 
         productVariants.forEach((variant, index) => {
           const btn = document.createElement("button");
-          btn.textContent = variant.variant || "Default";
+          btn.textContent = variant.varian || "Varian";
           btn.addEventListener("click", () => {
             priceBox.innerHTML = `
-              Rp ${Number(variant.Price).toLocaleString("id-ID")}
-              ${variant.Diskon ? `<span class="old-price">Rp ${Number(variant.Diskon).toLocaleString("id-ID")}</span>` : ""}
+              Rp ${Number(variant.price).toLocaleString("id-ID")}
+              ${variant.diskon ? `<span class="old-price">Rp ${Number(variant.diskon).toLocaleString("id-ID")}</span>` : ""}
             `;
             document.querySelectorAll(".variants button").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
           });
           variantButtons.appendChild(btn);
-          if (index === 0) btn.click(); // pilih varian pertama otomatis
+          if (index === 0) btn.click(); // otomatis pilih varian pertama
         });
 
         // Auto slide gambar
@@ -188,10 +198,9 @@
         document.getElementById("productDetail").innerHTML = "<p>Gagal memuat detail produk.</p>";
       }
     }
+
     fetchProductDetail();
   </script>
+
 </body>
 </html>
-
-
-
