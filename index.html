@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <!-- Viewport untuk kunci ukuran layar 6.4 inch (~360px) di HP -->
+  <!-- Viewport terkunci 360px di HP/Tab -->
   <meta name="viewport" content="width=360, initial-scale=1, maximum-scale=1" />
   <title>Intan Mutiara Cell - Marketplace</title>
   <style>
@@ -20,13 +20,8 @@
     body{margin:0;font-family:"Poppins",sans-serif;background:var(--neutral-2);color:var(--text-1)}
     img{max-width:100%;display:block}
 
-    /* Tambahan: agar layout terkunci max 360px di HP/Tab */
-    .app-container{
-      max-width:360px;
-      margin:0 auto;
-      background:var(--neutral-2);
-      min-height:100vh;
-    }
+    /* Kunci max 360px di HP/Tab */
+    .app-container{max-width:360px;margin:0 auto;background:var(--neutral-2);min-height:100vh}
 
     /* Header atas */
     .topbar{position:sticky;top:0;z-index:1000;background:var(--shopee);padding:10px 12px;display:flex;gap:10px;align-items:center}
@@ -60,13 +55,8 @@
     .section__title{font-size:1.02rem;font-weight:700}
     .see-all{color:var(--shopee);text-decoration:none;font-weight:600;font-size:.9rem}
 
-    /* Scroller swipe halus */
-    .scroller{
-      display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;
-      -webkit-overflow-scrolling:touch;
-      scroll-behavior:smooth;
-      padding-bottom:6px
-    }
+    /* Scroller */
+    .scroller{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;padding-bottom:6px}
     .scroller::-webkit-scrollbar{display:none}
     .scroller > *{flex:0 0 auto;scroll-snap-align:start}
 
@@ -98,12 +88,14 @@
   </style>
 </head>
 <body>
-<div class="app-container"><!-- Mulai container -->
+<div class="app-container">
 
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="topbar__back"></div>
-    <div class="topbar__search"><input placeholder="Cari di Toko"></div>
+    <div class="topbar__search">
+      <input id="searchBox" placeholder="Cari di Toko">
+    </div>
     <div class="topbar__more"></div>
   </div>
 
@@ -139,10 +131,10 @@
     Intan Mutiara, Jl. Pemuda No.27-31, Surabaya • WA: 0896-5342-9419
   </footer>
 
-</div><!-- End container -->
+</div>
 
 <script>
-  const apiURL = "https://script.google.com/macros/s/AKfycbwhEx_j7s685ef89RppbIwjgwVePZyldnx8jC33lchkmirpWtr4Pm1sqhk5L7NjH_M6/exec";
+  const apiURL="https://script.google.com/macros/s/AKfycbwhEx_j7s685ef89RppbIwjgwVePZyldnx8jC33lchkmirpWtr4Pm1sqhk5L7NjH_M6/exec";
   let products=[];
 
   function createProductCard(p){
@@ -166,7 +158,6 @@
   async function fetchProducts(){
     const res=await fetch(apiURL);
     products=await res.json();
-    localStorage.setItem("cachedProducts", JSON.stringify(products));
     renderToko();
   }
 
@@ -176,9 +167,6 @@
       <section class="section">
         <div class="section__head"><div class="section__title">Kamu Mungkin Suka</div></div>
         <div class="scroller">${products.slice(0,15).map(createProductCard).join("")}</div>
-      </section>
-      <section class="section">
-        <img src="Intan Mutiara Cell.jpg" style="width:100%;border-radius:12px">
       </section>
       <section class="section">
         <div class="section__head"><div class="section__title">Penawaran Terbaik</div></div>
@@ -227,7 +215,7 @@
       <div class="grid grid--2col">${filtered.length?filtered.map(createProductCard).join(""):"<p>Tidak ada produk</p>"}</div></section>`;
   }
 
-  // Tabs
+  // Tab navigation
   document.querySelectorAll(".tab").forEach(tab=>{
     tab.addEventListener("click",e=>{
       e.preventDefault();
@@ -237,6 +225,15 @@
       if(tab.dataset.tab==="produk") renderProduk();
       if(tab.dataset.tab==="kategori") renderKategori();
     });
+  });
+
+  // Fitur pencarian
+  document.getElementById("searchBox").addEventListener("input",e=>{
+    const keyword=e.target.value.toLowerCase();
+    const filtered=products.filter(p=>p.title.toLowerCase().includes(keyword));
+    document.getElementById("tabContent").innerHTML=
+      `<section class="section"><div class="section__head"><div class="section__title">Hasil Pencarian</div></div>
+      <div class="grid grid--2col">${filtered.length?filtered.map(createProductCard).join(""):"<p>Tidak ada produk</p>"}</div></section>`;
   });
 
   function openChat(){alert("Fitur chat pembeli & seller akan ditambahkan di sini.")}
