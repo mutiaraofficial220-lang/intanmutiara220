@@ -57,7 +57,8 @@
     /* Deskripsi */
     .description {padding: 15px;}
     .description h3 {font-size: 16px;margin-bottom: 8px;}
-    .desc-text {font-size: 14px;color: #444;line-height: 1.5;}
+    .desc-text {font-size: 14px;color: #444;line-height: 1.5;max-height: 150px;overflow: hidden;}
+    .desc-text.expanded {max-height: none;}
     .toggle-desc {color: #ff5722;font-size: 14px;cursor: pointer;margin-top: 6px;display: inline-block;}
 
     /* Tombol bawah */
@@ -101,8 +102,6 @@
       let selectedVariant = variants.length > 0 ? variants[0] : null;
 
       const fullText = baseProduct.deskripsi || "Deskripsi belum tersedia.";
-      const isLong = fullText.length > 200;
-      const shortText = isLong ? fullText.substring(0,200) + "..." : fullText;
 
       // ambil 15 produk random untuk rekomendasi
       const shuffled = products.filter(p => p.id !== baseProduct.id)
@@ -129,9 +128,7 @@
           <div class="variants">
             <h4>Pilih Varian:</h4>
             ${variants.map((v,i)=>`
-              <button class="variant-btn ${i===0?'active':''}" data-index="${i}">
-                ${v.varian || "Varian "+(i+1)}
-              </button>
+              <button class="variant-btn ${i===0?'active':''}" data-index="${i}">${v.varian || "Varian "+(i+1)}</button>
             `).join("")}
           </div>`:""}
 
@@ -157,8 +154,8 @@
 
         <div class="description">
           <h3>Deskripsi Produk</h3>
-          <div class="desc-text" id="descText">${shortText.replace(/\n/g,"<br>")}</div>
-          ${isLong?`<span class="toggle-desc" id="toggleDesc">Selengkapnya</span>`:""}
+          <div class="desc-text" id="descText">${fullText.replace(/\n/g,"<br>")}</div>
+          <span class="toggle-desc" id="toggleDesc">Sembunyikan</span>
         </div>
 
         <div class="buy-links">
@@ -166,6 +163,16 @@
           <a href="${baseProduct.tokopedia||'#'}" target="_blank" class="tokopedia">Tokopedia</a>
         </div>
       `;
+
+      // toggle deskripsi
+      const toggleBtn = document.getElementById("toggleDesc");
+      const descText = document.getElementById("descText");
+      let expanded = true;
+      toggleBtn.addEventListener("click", () => {
+        expanded = !expanded;
+        descText.classList.toggle("expanded", expanded);
+        toggleBtn.textContent = expanded ? "Sembunyikan" : "Selengkapnya";
+      });
 
       // varian
       document.querySelectorAll(".variant-btn").forEach(btn=>{
@@ -180,18 +187,6 @@
             <span class="cicilan">Cicilan 0%</span>`;
         });
       });
-
-      // toggle deskripsi
-      const toggleBtn = document.getElementById("toggleDesc");
-      if (toggleBtn) {
-        const descText = document.getElementById("descText");
-        let expanded = false;
-        toggleBtn.addEventListener("click", () => {
-          expanded = !expanded;
-          descText.innerHTML = expanded ? fullText.replace(/\n/g,"<br>") : shortText.replace(/\n/g,"<br>");
-          toggleBtn.textContent = expanded ? "Sembunyikan" : "Selengkapnya";
-        });
-      }
 
       // slider swipe urut
       const slider=document.getElementById("slider");
