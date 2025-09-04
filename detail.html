@@ -57,8 +57,7 @@
     /* Deskripsi */
     .description {padding: 15px;}
     .description h3 {font-size: 16px;margin-bottom: 8px;}
-    .desc-short, .desc-full {font-size: 14px;color: #444;line-height: 1.5;}
-    .desc-full {display: none;}
+    .desc-text {font-size: 14px;color: #444;line-height: 1.5;}
     .toggle-desc {color: #ff5722;font-size: 14px;cursor: pointer;margin-top: 6px;display: inline-block;}
 
     /* Tombol bawah */
@@ -102,7 +101,8 @@
       let selectedVariant = variants.length > 0 ? variants[0] : null;
 
       const fullText = baseProduct.deskripsi || "Deskripsi belum tersedia.";
-      const shortText = fullText.length > 150 ? fullText.substring(0,150) + "..." : fullText;
+      const isLong = fullText.length > 200;
+      const shortText = isLong ? fullText.substring(0,200) + "..." : fullText;
 
       // ambil 15 produk random untuk rekomendasi
       const shuffled = products.filter(p => p.id !== baseProduct.id)
@@ -157,13 +157,8 @@
 
         <div class="description">
           <h3>Deskripsi Produk</h3>
-          ${fullText.length > 150 ? `
-            <div class="desc-short">${shortText}</div>
-            <div class="desc-full">${fullText}</div>
-            <span class="toggle-desc">Selengkapnya</span>
-          ` : `
-            <div class="desc-full">${fullText}</div>
-          `}
+          <div class="desc-text" id="descText">${shortText}</div>
+          ${isLong?`<span class="toggle-desc" id="toggleDesc">Selengkapnya</span>`:""}
         </div>
 
         <div class="buy-links">
@@ -187,22 +182,14 @@
       });
 
       // toggle deskripsi
-      const toggleBtn = document.querySelector(".toggle-desc");
+      const toggleBtn = document.getElementById("toggleDesc");
       if (toggleBtn) {
-        const shortDesc = document.querySelector(".desc-short");
-        const fullDesc = document.querySelector(".desc-full");
-        fullDesc.style.display = "none"; // default
+        const descText = document.getElementById("descText");
+        let expanded = false;
         toggleBtn.addEventListener("click", () => {
-          const expanded = fullDesc.style.display === "block";
-          if (expanded) {
-            fullDesc.style.display = "none";
-            shortDesc.style.display = "block";
-            toggleBtn.textContent = "Selengkapnya";
-          } else {
-            fullDesc.style.display = "block";
-            shortDesc.style.display = "none";
-            toggleBtn.textContent = "Sembunyikan";
-          }
+          expanded = !expanded;
+          descText.textContent = expanded ? fullText : shortText;
+          toggleBtn.textContent = expanded ? "Sembunyikan" : "Selengkapnya";
         });
       }
 
