@@ -2,7 +2,6 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <!-- Viewport: bebas di PC, terkunci 360px di HP/Tab -->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Intan Mutiara Cell - Marketplace</title>
   <style>
@@ -20,12 +19,13 @@
     body{margin:0;font-family:"Poppins",sans-serif;background:var(--neutral-2);color:var(--text-1)}
     img{max-width:100%;display:block}
 
-    /* Default PC: full width */
-    .app-container{max-width:100%;margin:0 auto;background:var(--neutral-2);min-height:100vh}
-
-    /* HP/Tab: kunci max 360px */
-    @media (max-width: 768px){
-      .app-container{max-width:360px}
+    /* Container */
+    .app-container{
+      width:100%;          /* ikut lebar layar */
+      max-width:1200px;    /* batas di PC biar rapi */
+      margin:0 auto;
+      background:var(--neutral-2);
+      min-height:100vh;
     }
 
     /* Header atas */
@@ -73,7 +73,7 @@
     .kategori-item span{display:block;margin-top:6px;font-size:.85rem;color:#333}
 
     /* Produk card */
-    .card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;width:150px;flex-shrink:0;display:block;text-decoration:none;color:inherit}
+    .card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;flex-shrink:0;display:block;text-decoration:none;color:inherit}
     .card__img{position:relative}
     .card__img img{width:100%;aspect-ratio:1/1;object-fit:cover}
     .badge{position:absolute;left:8px;top:8px;background:var(--shopee);color:#fff;border-radius:4px;font-size:.72rem;padding:2px 6px;font-weight:700}
@@ -84,9 +84,9 @@
     .chip{display:inline-flex;gap:4px;align-items:center;padding:2px 6px;border:1px solid var(--border);border-radius:6px}
     .chip .star::before{content:"★";color:#ffb400;font-size:.9rem}
 
-    /* Grid */
+    /* Grid Produk */
     .grid{display:grid;gap:12px}
-    .grid--2col{grid-template-columns:repeat(2,1fr)}
+    .grid--2col{grid-template-columns:repeat(auto-fill, minmax(160px,1fr))}
 
     /* Footer */
     footer{background:#fff;border-top:1px solid var(--border);padding:18px;color:#666;text-align:center}
@@ -178,7 +178,6 @@
         <div class="scroller">${products.slice(0,15).map(createProductCard).join("")}</div>
       </section>
 
-      <!-- SAMPUL TAMBAHAN -->
       <section class="section" style="padding:0;margin-top:8px">
         <div style="
           background:url('Intan Mutiara Cell 220.jpg') center/cover no-repeat;
