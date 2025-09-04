@@ -183,15 +183,25 @@
       });
 
       // toggle deskripsi
-      const shortDesc=document.querySelector(".desc-short");
-      const fullDesc=document.querySelector(".desc-full");
-      const toggleBtn=document.querySelector(".toggle-desc");
-      toggleBtn.addEventListener("click",()=>{
-        const expanded=fullDesc.style.display==="block";
-        fullDesc.style.display=expanded?"none":"block";
-        shortDesc.style.display=expanded?"block":"none";
-        toggleBtn.textContent=expanded?"Selengkapnya":"Sembunyikan";
-      });
+const shortDesc = document.querySelector(".desc-short");
+const fullDesc = document.querySelector(".desc-full");
+const toggleBtn = document.querySelector(".toggle-desc");
+
+// default awal
+toggleBtn.textContent = "Selengkapnya";
+
+toggleBtn.addEventListener("click", () => {
+  const expanded = fullDesc.style.display === "block";
+  if (expanded) {
+    fullDesc.style.display = "none";
+    shortDesc.style.display = "block";
+    toggleBtn.textContent = "Selengkapnya";
+  } else {
+    fullDesc.style.display = "block";
+    shortDesc.style.display = "none";
+    toggleBtn.textContent = "Sembunyikan";
+  }
+});
 
       // slider swipe urut
       const slider=document.getElementById("slider");
@@ -211,3 +221,4 @@
   </script>
 </body>
 </html>
+
