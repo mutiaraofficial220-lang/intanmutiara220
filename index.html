@@ -16,7 +16,7 @@
   --radius:12px;
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:"Poppins",sans-serif;background:var(--neutral-2);color:var(--text-1)}
+body{margin:0;font-family:"Poppins",sans-serif;background:var(--neutral-2);color:var(--text-1);padding-bottom:70px} /* padding untuk bottom nav */
 img{max-width:100%;display:block}
 
 /* Container */
@@ -90,6 +90,44 @@ img{max-width:100%;display:block}
 
 /* Footer */
 footer{background:#fff;border-top:1px solid var(--border);padding:18px;color:#666;text-align:center}
+
+/* Bottom Navigation */
+.bottom-nav{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background:#fff;
+  border-top:1px solid #e5e5e5;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:1000;
+  box-shadow:0 -2px 6px rgba(0,0,0,0.08);
+}
+.nav-btn{
+  background:none;
+  border:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  font-size:.85rem;
+  color:#555;
+  cursor:pointer;
+}
+.nav-btn .icon{
+  font-size:1.5rem;
+  margin-bottom:2px;
+}
+.nav-btn.disabled{
+  opacity:0.6;
+  cursor:default;
+}
+.nav-btn:active{
+  color: var(--shopee);
+}
 </style>
 </head>
 <body>
@@ -136,6 +174,18 @@ footer{background:#fff;border-top:1px solid var(--border);padding:18px;color:#66
     Intan Mutiara, Jl. Pemuda No.27-31, Surabaya • WA: 0896-5342-9419
   </footer>
 
+</div>
+
+<!-- BOTTOM NAVIGATION -->
+<div class="bottom-nav">
+  <button class="nav-btn" id="homeBtn">
+    <span class="icon">🏠</span>
+    <span class="label">Home</span>
+  </button>
+  <button class="nav-btn" onclick="alert('Fitur Login/Daftar akan ditambahkan')">
+    <span class="icon">👤</span>
+    <span class="label">Login/Daftar</span>
+  </button>
 </div>
 
 <script>
@@ -258,6 +308,15 @@ document.getElementById("searchBox").addEventListener("input",e=>{
 });
 
 function openChat(){alert("Fitur chat pembeli & seller akan ditambahkan di sini.")}
+
+// Tombol Home logic
+const homeBtn = document.getElementById("homeBtn");
+if(window.location.pathname.endsWith("index.html") || window.location.pathname === "/"){
+  homeBtn.classList.add("disabled"); // Tidak aktif
+} else {
+  homeBtn.addEventListener("click", ()=> window.location.href='index.html');
+}
+
 fetchProducts();
 </script>
 </body>
