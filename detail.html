@@ -57,7 +57,7 @@
     /* Deskripsi */
     .description {padding: 15px;}
     .description h3 {font-size: 16px;margin-bottom: 8px;}
-    .desc-short {font-size: 14px;color: #444;line-height: 1.5;max-height: 60px;overflow: hidden;}
+    .desc-short {font-size: 14px;color: #444;line-height: 1.5;}
     .desc-full {display: none;font-size: 14px;color: #444;line-height: 1.5;}
     .toggle-desc {color: #ff5722;font-size: 14px;cursor: pointer;margin-top: 6px;display: inline-block;}
 
@@ -101,8 +101,8 @@
       const variants = baseProduct.variants || [];
       let selectedVariant = variants.length > 0 ? variants[0] : null;
 
-      const formattedDesc = (baseProduct.deskripsi || "Deskripsi belum tersedia.")
-        .split(/\n+/).map(line => `<p>${line.trim()}</p>`).join("");
+      const fullText = baseProduct.deskripsi || "Deskripsi belum tersedia.";
+      const shortText = fullText.length > 150 ? fullText.substring(0,150) + "..." : fullText;
 
       // ambil 15 produk random untuk rekomendasi
       const shuffled = products.filter(p => p.id !== baseProduct.id)
@@ -157,8 +157,8 @@
 
         <div class="description">
           <h3>Deskripsi Produk</h3>
-          <div class="desc-short">${formattedDesc}</div>
-          <div class="desc-full">${formattedDesc}</div>
+          <div class="desc-short">${shortText}</div>
+          <div class="desc-full">${fullText}</div>
           <span class="toggle-desc">Selengkapnya</span>
         </div>
 
@@ -183,25 +183,23 @@
       });
 
       // toggle deskripsi
-const shortDesc = document.querySelector(".desc-short");
-const fullDesc = document.querySelector(".desc-full");
-const toggleBtn = document.querySelector(".toggle-desc");
+      const shortDesc = document.querySelector(".desc-short");
+      const fullDesc = document.querySelector(".desc-full");
+      const toggleBtn = document.querySelector(".toggle-desc");
 
-// default awal
-toggleBtn.textContent = "Selengkapnya";
-
-toggleBtn.addEventListener("click", () => {
-  const expanded = fullDesc.style.display === "block";
-  if (expanded) {
-    fullDesc.style.display = "none";
-    shortDesc.style.display = "block";
-    toggleBtn.textContent = "Selengkapnya";
-  } else {
-    fullDesc.style.display = "block";
-    shortDesc.style.display = "none";
-    toggleBtn.textContent = "Sembunyikan";
-  }
-});
+      fullDesc.style.display = "none"; // default pendek
+      toggleBtn.addEventListener("click", () => {
+        const expanded = fullDesc.style.display === "block";
+        if (expanded) {
+          fullDesc.style.display = "none";
+          shortDesc.style.display = "block";
+          toggleBtn.textContent = "Selengkapnya";
+        } else {
+          fullDesc.style.display = "block";
+          shortDesc.style.display = "none";
+          toggleBtn.textContent = "Sembunyikan";
+        }
+      });
 
       // slider swipe urut
       const slider=document.getElementById("slider");
@@ -221,4 +219,3 @@ toggleBtn.addEventListener("click", () => {
   </script>
 </body>
 </html>
-
