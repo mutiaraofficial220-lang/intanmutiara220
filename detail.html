@@ -57,8 +57,8 @@
     /* Deskripsi */
     .description {padding: 15px;}
     .description h3 {font-size: 16px;margin-bottom: 8px;}
-    .desc-text {font-size: 14px;color: #444;line-height: 1.5;max-height: 150px;overflow: hidden;}
-    .desc-text.expanded {max-height: none;}
+    .desc-text {font-size: 14px;color: #444;line-height: 1.5;}
+    .desc-text.collapsed {max-height: 150px;overflow: hidden;}
     .toggle-desc {color: #ff5722;font-size: 14px;cursor: pointer;margin-top: 6px;display: inline-block;}
 
     /* Tombol bawah */
@@ -167,10 +167,10 @@
       // toggle deskripsi
       const toggleBtn = document.getElementById("toggleDesc");
       const descText = document.getElementById("descText");
-      let expanded = true;
+      let expanded = true; // default tampil penuh
       toggleBtn.addEventListener("click", () => {
         expanded = !expanded;
-        descText.classList.toggle("expanded", expanded);
+        descText.classList.toggle("collapsed", !expanded);
         toggleBtn.textContent = expanded ? "Sembunyikan" : "Selengkapnya";
       });
 
