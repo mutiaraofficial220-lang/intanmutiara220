@@ -31,7 +31,7 @@
     .variants {padding: 10px 15px;}
     .variants h4 {margin: 0 0 8px;font-size: 14px;}
     .variant-btn {display: inline-block;margin: 4px;padding: 6px 12px;border: 1px solid #ccc;
-      border-radius: 5px;cursor: pointer;font-size: 14px;background: #f9f9f9;transition: all 0.2s;}
+      border-radius: 5px;cursor: pointer;font-size: 14px;background: #f9f9f9;}
     .variant-btn.active {border-color: #ff5722;background: #ffe5dc;color: #ff5722;font-weight: bold;}
 
     /* Info toko */
@@ -41,18 +41,14 @@
     .store .info img {width: 40px;height: 40px;border-radius: 50%;}
     .store .detail {font-size: 14px;}
     .store button {background: white;border: 1px solid #ff5722;color: #ff5722;
-      padding: 6px 12px;border-radius: 5px;cursor: pointer;transition: 0.2s;}
-    .store button:hover {background:#ff5722;color:#fff;}
+      padding: 6px 12px;border-radius: 5px;cursor: pointer;}
 
     /* Rekomendasi produk */
     .recommend {padding: 15px;}
     .recommend h3 {font-size: 16px;margin-bottom: 10px;}
-    .recommend-slider {display: flex;overflow-x: auto;gap: 10px;scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;padding-bottom: 5px;}
+    .recommend-slider {display: flex;overflow-x: auto;gap: 10px;scroll-snap-type: x mandatory;-webkit-overflow-scrolling: touch;}
     .recommend-item {flex: 0 0 auto;width: 120px;border: 1px solid #eee;border-radius: 8px;
-      overflow: hidden;text-align: center;font-size: 13px;background: #fff;cursor: pointer;
-      scroll-snap-align: start;transition: transform 0.2s;}
-    .recommend-item:hover {transform: translateY(-3px);}
+      overflow: hidden;text-align: center;font-size: 13px;background: #fff;cursor: pointer;scroll-snap-align: start;}
     .recommend-item img {width: 100%;height: 100px;object-fit: cover;}
     .recommend-item p {margin: 5px;color: #333;font-size: 12px;}
     .lihat-semua {display: block;text-align: center;margin-top: 10px;color: #ff5722;font-size: 14px;
@@ -61,12 +57,12 @@
     /* Deskripsi */
     .description {padding: 15px;}
     .description h3 {font-size: 16px;margin-bottom: 8px;}
-    .desc-short {font-size: 14px;color: #444;line-height: 1.5;}
-    .desc-full {display: none;font-size: 14px;color: #444;line-height: 1.5;}
+    .desc-short, .desc-full {font-size: 14px;color: #444;line-height: 1.5;}
+    .desc-full {display: none;}
     .toggle-desc {color: #ff5722;font-size: 14px;cursor: pointer;margin-top: 6px;display: inline-block;}
 
     /* Tombol bawah */
-    .buy-links {position: fixed;bottom: 0;left: 0;right: 0;display: flex;z-index: 20;}
+    .buy-links {position: fixed;bottom: 0;left: 0;right: 0;display: flex;}
     .buy-links a {flex: 1;text-align: center;padding: 15px 0;color: white;font-weight: bold;text-decoration: none;}
     .buy-links a.shopee {background-color: #ee4d2d;}
     .buy-links a.tokopedia {background-color: #03ac0e;}
@@ -151,7 +147,7 @@
           <h3>Rekomendasi Produk</h3>
           <div class="recommend-slider">
             ${shuffled.map(p=>`
-              <div class="recommend-item" data-id="${p.id}">
+              <div class="recommend-item" onclick="window.location.href='detail.html?id=${p.id}'">
                 <img src="${p.images?.[0] || 'no-image.jpg'}" alt="${p.title}">
                 <p>${p.title.substring(0,25)}...</p>
               </div>`).join("")}
@@ -161,9 +157,13 @@
 
         <div class="description">
           <h3>Deskripsi Produk</h3>
-          <div class="desc-short">${shortText}</div>
-          <div class="desc-full">${fullText}</div>
-          <span class="toggle-desc">Selengkapnya</span>
+          ${fullText.length > 150 ? `
+            <div class="desc-short">${shortText}</div>
+            <div class="desc-full">${fullText}</div>
+            <span class="toggle-desc">Selengkapnya</span>
+          ` : `
+            <div class="desc-full">${fullText}</div>
+          `}
         </div>
 
         <div class="buy-links">
@@ -172,7 +172,7 @@
         </div>
       `;
 
-      // varian pilih
+      // varian
       document.querySelectorAll(".variant-btn").forEach(btn=>{
         btn.addEventListener("click",()=>{
           document.querySelectorAll(".variant-btn").forEach(b=>b.classList.remove("active"));
@@ -187,23 +187,24 @@
       });
 
       // toggle deskripsi
-      const shortDesc = document.querySelector(".desc-short");
-      const fullDesc = document.querySelector(".desc-full");
       const toggleBtn = document.querySelector(".toggle-desc");
-
-      fullDesc.style.display = "none"; // default pendek
-      toggleBtn.addEventListener("click", () => {
-        const expanded = fullDesc.style.display === "block";
-        if (expanded) {
-          fullDesc.style.display = "none";
-          shortDesc.style.display = "block";
-          toggleBtn.textContent = "Selengkapnya";
-        } else {
-          fullDesc.style.display = "block";
-          shortDesc.style.display = "none";
-          toggleBtn.textContent = "Sembunyikan";
-        }
-      });
+      if (toggleBtn) {
+        const shortDesc = document.querySelector(".desc-short");
+        const fullDesc = document.querySelector(".desc-full");
+        fullDesc.style.display = "none"; // default
+        toggleBtn.addEventListener("click", () => {
+          const expanded = fullDesc.style.display === "block";
+          if (expanded) {
+            fullDesc.style.display = "none";
+            shortDesc.style.display = "block";
+            toggleBtn.textContent = "Selengkapnya";
+          } else {
+            fullDesc.style.display = "block";
+            shortDesc.style.display = "none";
+            toggleBtn.textContent = "Sembunyikan";
+          }
+        });
+      }
 
       // slider swipe urut
       const slider=document.getElementById("slider");
@@ -217,15 +218,6 @@
         slider.style.transform=`translateX(-${current*100}%)`;
         dots.forEach((d,i)=>d.classList.toggle("active",i===current));
       });
-
-      // klik rekomendasi
-      document.querySelectorAll(".recommend-item").forEach(item=>{
-        item.addEventListener("click",()=>{
-          const pid = item.getAttribute("data-id");
-          window.location.href = `detail.html?id=${pid}`;
-        });
-      });
-
     } catch(err){
       console.error(err);
       document.getElementById("productDetail").innerHTML="<p>Gagal memuat detail produk.</p>";
