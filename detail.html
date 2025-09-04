@@ -35,6 +35,7 @@
       white-space: nowrap;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
+      position: relative;
     }
     .product-images img {
       width: 100%;
@@ -43,6 +44,24 @@
       display: inline-block;
       object-fit: cover;
       scroll-snap-align: center;
+    }
+    .dots {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 5px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.6);
+      cursor: pointer;
+    }
+    .dot.active {
+      background: #ff5722;
     }
 
     /* Harga */
@@ -166,6 +185,39 @@
       display: inline-block;
     }
 
+    /* Rekomendasi produk */
+    .recommend {
+      padding: 15px;
+    }
+    .recommend h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .recommend-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .recommend-item {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      overflow: hidden;
+      text-align: center;
+      font-size: 13px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .recommend-item img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+    }
+    .recommend-item p {
+      margin: 5px;
+      color: #333;
+      font-size: 12px;
+    }
+
     /* Tombol bawah */
     .buy-links {
       position: fixed;
@@ -236,10 +288,16 @@
         .map(line => `<p>${line.trim()}</p>`)
         .join("");
 
+      // ambil 15 produk random untuk rekomendasi
+      const shuffled = products.filter(p => p.id !== baseProduct.id)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 15);
+
       // render awal
       document.getElementById("productDetail").innerHTML = `
-        <div class="product-images">
+        <div class="product-images" id="slider">
           ${images.map(img => `<img src="${img}" />`).join("")}
+          <div class="dots">${images.map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`).join("")}</div>
         </div>
 
         <div class="price-box" id="priceBox">
@@ -281,6 +339,18 @@
           <span class="toggle-desc">Lihat Selengkapnya</span>
         </div>
 
+        <div class="recommend">
+          <h3>Rekomendasi Produk</h3>
+          <div class="recommend-list">
+            ${shuffled.map(p => `
+              <div class="recommend-item" onclick="window.location.href='detail.html?id=${p.id}'">
+                <img src="${p.images?.[0] || 'no-image.jpg'}" alt="${p.title}">
+                <p>${p.title}</p>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
         <div class="buy-links">
           <a href="${baseProduct.shopee || '#'}" target="_blank" class="shopee">Shopee</a>
           <a href="${baseProduct.tokopedia || '#'}" target="_blank" class="tokopedia">Tokopedia</a>
@@ -319,6 +389,14 @@
           shortDesc.style.display = "none";
           toggleBtn.textContent = "Tutup";
         }
+      });
+
+      // slider dots update
+      const slider = document.getElementById("slider");
+      const dots = document.querySelectorAll(".dot");
+      slider.addEventListener("scroll", () => {
+        const index = Math.round(slider.scrollLeft / slider.clientWidth);
+        dots.forEach((dot, i) => dot.classList.toggle("active", i === index));
       });
 
     } catch (err) {
