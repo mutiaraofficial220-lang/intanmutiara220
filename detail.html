@@ -9,7 +9,6 @@
     .back-btn {position: absolute;top: 10px;left: 10px;background: rgba(0,0,0,0.5);color: white;
       padding: 5px 10px;border-radius: 50%;font-size: 16px;cursor: pointer;z-index: 10;}
 
-    /* Slider gambar produk */
     .product-images {width: 100%;max-height: 350px;overflow: hidden;position: relative;}
     .product-images .slider {display: flex;transition: transform 0.3s ease;}
     .product-images img {width: 100%;flex-shrink: 0;object-fit: cover;}
@@ -17,24 +16,20 @@
     .dot {width: 8px;height: 8px;border-radius: 50%;background: rgba(255,255,255,0.6);cursor: pointer;}
     .dot.active {background: #ff5722;}
 
-    /* Harga */
     .price-box {padding: 10px 15px;font-size: 24px;font-weight: bold;color: #d32f2f;}
     .cicilan {font-size: 14px;color: #333;background: #f9dcdc;display: inline-block;padding: 3px 8px;
       border-radius: 5px;margin-left: 8px;}
     .old-price {text-decoration: line-through;color: grey;font-size: 14px;margin-left: 10px;}
     .meta {font-size: 13px;color: #666;padding: 0 15px 10px;}
 
-    /* Judul */
     .title {font-size: 16px;font-weight: bold;padding: 0 15px 10px;}
 
-    /* Varian */
     .variants {padding: 10px 15px;}
     .variants h4 {margin: 0 0 8px;font-size: 14px;}
     .variant-btn {display: inline-block;margin: 4px;padding: 6px 12px;border: 1px solid #ccc;
       border-radius: 5px;cursor: pointer;font-size: 14px;background: #f9f9f9;}
     .variant-btn.active {border-color: #ff5722;background: #ffe5dc;color: #ff5722;font-weight: bold;}
 
-    /* Info toko */
     .store {display: flex;justify-content: space-between;align-items: center;
       padding: 12px 15px;border-top: 1px solid #eee;border-bottom: 1px solid #eee;background: #fff;}
     .store .info {display: flex;align-items: center;gap: 10px;}
@@ -43,7 +38,6 @@
     .store button {background: white;border: 1px solid #ff5722;color: #ff5722;
       padding: 6px 12px;border-radius: 5px;cursor: pointer;}
 
-    /* Rekomendasi produk */
     .recommend {padding: 15px;}
     .recommend h3 {font-size: 16px;margin-bottom: 10px;}
     .recommend-slider {display: flex;overflow-x: auto;gap: 10px;scroll-snap-type: x mandatory;-webkit-overflow-scrolling: touch;}
@@ -54,13 +48,10 @@
     .lihat-semua {display: block;text-align: center;margin-top: 10px;color: #ff5722;font-size: 14px;
       text-decoration: none;font-weight: bold;}
 
-    /* Deskripsi */
     .description {padding: 15px;}
     .description h3 {font-size: 16px;margin-bottom: 8px;}
     .desc-text {font-size: 14px;color: #444;line-height: 1.5;}
-    .toggle-desc {color: #ff5722;font-size: 14px;cursor: pointer;margin-top: 6px;display: inline-block;}
 
-    /* Tombol bawah */
     .buy-links {position: fixed;bottom: 0;left: 0;right: 0;display: flex;}
     .buy-links a {flex: 1;text-align: center;padding: 15px 0;color: white;font-weight: bold;text-decoration: none;}
     .buy-links a.shopee {background-color: #ee4d2d;}
@@ -73,144 +64,79 @@
   <div id="productDetail">Memuat detail produk...</div>
 
   <script>
-  const apiURL = "https://script.google.com/macros/s/AKfycbwhEx_j7s685ef89RppbIwjgwVePZyldnx8jC33lchkmirpWtr4Pm1sqhk5L7NjH_M6/exec";
-  const CACHE_KEY = "cachedProducts";
-  const urlParams = new URLSearchParams(window.location.search);
-  const productId = urlParams.get("id");
+    const apiURL = "https://script.google.com/macros/s/AKfycbwhEx_j7s685ef89RppbIwjgwVePZyldnx8jC33lchkmirpWtr4Pm1sqhk5L7NjH_M6/exec";
+    const CACHE_KEY = "cachedProducts";
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get("id");
 
-  async function fetchProductDetail() {
-    try {
-      let products = [];
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        products = JSON.parse(cached);
-      } else {
-        const res = await fetch(apiURL);
-        products = await res.json();
-        localStorage.setItem(CACHE_KEY, JSON.stringify(products));
-      }
+    async function fetchProductDetail() {
+      try {
+        let products = [];
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          products = JSON.parse(cached);
+        } else {
+          const res = await fetch(apiURL);
+          products = await res.json();
+          localStorage.setItem(CACHE_KEY, JSON.stringify(products));
+        }
 
-      const baseProduct = products.find(p => p.id === productId?.trim());
-      if (!baseProduct) {
-        document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan.</p>";
-        return;
-      }
+        const baseProduct = products.find(p => p.id === productId?.trim());
+        if (!baseProduct) {
+          document.getElementById("productDetail").innerHTML = "<p>Produk tidak ditemukan.</p>";
+          return;
+        }
 
-      const images = baseProduct.images || [];
-      const variants = baseProduct.variants || [];
-      let selectedVariant = variants.length > 0 ? variants[0] : null;
+        const images = baseProduct.images || [];
+        const variants = baseProduct.variants || [];
+        let selectedVariant = variants.length > 0 ? variants[0] : null;
+        const fullText = baseProduct.deskripsi || "Deskripsi belum tersedia.";
 
-      const fullText = baseProduct.deskripsi || "Deskripsi belum tersedia.";
-      const isLong = fullText.length > 200;
-      const shortText = isLong ? fullText.substring(0,200) + "..." : fullText;
+        const shuffled = products.filter(p => p.id !== baseProduct.id)
+          .sort(() => 0.5 - Math.random()).slice(0, 15);
 
-      // ambil 15 produk random untuk rekomendasi
-      const shuffled = products.filter(p => p.id !== baseProduct.id)
-        .sort(() => 0.5 - Math.random()).slice(0, 15);
-
-      document.getElementById("productDetail").innerHTML = `
-        <div class="product-images">
-          <div class="slider" id="slider">
-            ${images.map(img => `<img src="${img}" />`).join("")}
+        document.getElementById("productDetail").innerHTML = `
+          <div class="product-images">
+            <div class="slider" id="slider">
+              ${images.map(img => `<img src="${img}" />`).join("")}
+            </div>
+            <div class="dots">${images.map((_, i) => `<div class="dot ${i===0?'active':''}" data-index="${i}"></div>`).join("")}</div>
           </div>
-          <div class="dots">${images.map((_, i) => `<div class="dot ${i===0?'active':''}" data-index="${i}"></div>`).join("")}</div>
-        </div>
 
-        <div class="price-box" id="priceBox">
-          Rp ${selectedVariant ? Number(selectedVariant.price).toLocaleString("id-ID") : "0"}
-          ${selectedVariant?.diskon ? `<span class="old-price">Rp ${Number(selectedVariant.diskon).toLocaleString("id-ID")}</span>` : ""}
-          <span class="cicilan">Cicilan 0%</span>
-        </div>
-
-        <div class="meta">⭐ 4.8 | Terjual 17+</div>
-        <div class="title">${baseProduct.title}</div>
-
-        ${variants.length>1?`
-          <div class="variants">
-            <h4>Pilih Varian:</h4>
-            ${variants.map((v,i)=>`
-              <button class="variant-btn ${i===0?'active':''}" data-index="${i}">
-                ${v.varian || "Varian "+(i+1)}
-              </button>
-            `).join("")}
-          </div>`:""}
-
-        <div class="store">
-          <div class="info">
-            <img src="Intan Mutiara.jpg" alt="logo toko">
-            <div class="detail"><strong>INTAN MUTIARA CELL</strong><br><small>KOTA SURABAYA</small></div>
+          <div class="price-box" id="priceBox">
+            Rp ${selectedVariant ? Number(selectedVariant.price).toLocaleString("id-ID") : "0"}
+            ${selectedVariant?.diskon ? `<span class="old-price">Rp ${Number(selectedVariant.diskon).toLocaleString("id-ID")}</span>` : ""}
+            <span class="cicilan">Cicilan 0%</span>
           </div>
-          <button onclick="window.location.href='index.html'">Kunjungi</button>
-        </div>
 
-        <div class="recommend">
-          <h3>Rekomendasi Produk</h3>
-          <div class="recommend-slider">
-            ${shuffled.map(p=>`
-              <div class="recommend-item" onclick="window.location.href='detail.html?id=${p.id}'">
-                <img src="${p.images?.[0] || 'no-image.jpg'}" alt="${p.title}">
-                <p>${p.title.substring(0,25)}...</p>
-              </div>`).join("")}
+          <div class="meta">⭐ 4.8 | Terjual 17+</div>
+          <div class="title">${baseProduct.title}</div>
+
+          ${variants.length>1?`
+            <div class="variants">
+              <h4>Pilih Varian:</h4>
+              ${variants.map((v,i)=>`
+                <button class="variant-btn ${i===0?'active':''}" data-index="${i}">
+                  ${v.varian || "Varian "+(i+1)}
+                </button>
+              `).join("")}
+            </div>`:""}
+
+          <div class="store">
+            <div class="info">
+              <img src="Intan Mutiara.jpg" alt="logo toko">
+              <div class="detail"><strong>INTAN MUTIARA CELL</strong><br><small>KOTA SURABAYA</small></div>
+            </div>
+            <button onclick="window.location.href='index.html'">Kunjungi</button>
           </div>
-          <a href="index.html" class="lihat-semua">Lihat Semua</a>
-        </div>
 
-        <div class="description">
-          <h3>Deskripsi Produk</h3>
-          <div class="desc-text" id="descText">${shortText}</div>
-          ${isLong?`<span class="toggle-desc" id="toggleDesc">Selengkapnya</span>`:""}
-        </div>
-
-        <div class="buy-links">
-          <a href="${baseProduct.shopee||'#'}" target="_blank" class="shopee">Shopee</a>
-          <a href="${baseProduct.tokopedia||'#'}" target="_blank" class="tokopedia">Tokopedia</a>
-        </div>
-      `;
-
-      // varian
-      document.querySelectorAll(".variant-btn").forEach(btn=>{
-        btn.addEventListener("click",()=>{
-          document.querySelectorAll(".variant-btn").forEach(b=>b.classList.remove("active"));
-          btn.classList.add("active");
-          const idx = btn.dataset.index;
-          selectedVariant = variants[idx];
-          document.getElementById("priceBox").innerHTML = `
-            Rp ${Number(selectedVariant.price).toLocaleString("id-ID")}
-            ${selectedVariant.diskon?`<span class="old-price">Rp ${Number(selectedVariant.diskon).toLocaleString("id-ID")}</span>`:""}
-            <span class="cicilan">Cicilan 0%</span>`;
-        });
-      });
-
-      // toggle deskripsi
-      const toggleBtn = document.getElementById("toggleDesc");
-      if (toggleBtn) {
-        const descText = document.getElementById("descText");
-        let expanded = false;
-        toggleBtn.addEventListener("click", () => {
-          expanded = !expanded;
-          descText.textContent = expanded ? fullText : shortText;
-          toggleBtn.textContent = expanded ? "Sembunyikan" : "Selengkapnya";
-        });
-      }
-
-      // slider swipe urut
-      const slider=document.getElementById("slider");
-      const dots=document.querySelectorAll(".dot");
-      let current=0,startX=0;
-      slider.addEventListener("touchstart",e=>startX=e.touches[0].clientX);
-      slider.addEventListener("touchend",e=>{
-        const endX=e.changedTouches[0].clientX;
-        if(startX-endX>50 && current<images.length-1) current++;
-        if(endX-startX>50 && current>0) current--;
-        slider.style.transform=`translateX(-${current*100}%)`;
-        dots.forEach((d,i)=>d.classList.toggle("active",i===current));
-      });
-    } catch(err){
-      console.error(err);
-      document.getElementById("productDetail").innerHTML="<p>Gagal memuat detail produk.</p>";
-    }
-  }
-  fetchProductDetail();
-  </script>
-</body>
-</html>
+          <div class="recommend">
+            <h3>Rekomendasi Produk</h3>
+            <div class="recommend-slider">
+              ${shuffled.map(p=>`
+                <div class="recommend-item" onclick="window.location.href='detail.html?id=${p.id}'">
+                  <img src="${p.images?.[0] || 'no-image.jpg'}" alt="${p.title}">
+                  <p>${p.title.substring(0,25)}...</p>
+                </div>`).join("")}
+            </div>
+            <a href="index.html
